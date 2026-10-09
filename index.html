@@ -379,7 +379,10 @@ body.scenemode .score,body.scenemode .play,body.scenemode .house{display:none}
 .book-in .big{font-size:1.2rem;padding:10px 26px;border:0;border-radius:999px;background:var(--coin);color:var(--ink);box-shadow:0 4px 0 #b88a00;cursor:pointer;font-family:inherit}
 .fi{width:100%;height:100%}
 
-.farm{background:#8fd0ff}
+.farm{background:#3f8f46}
+.fzoom{position:absolute;right:8px;bottom:8px;display:flex;flex-direction:column;gap:6px;z-index:2}
+.fzoom button{width:44px;height:44px;border:0;border-radius:12px;background:rgba(29,18,48,.75);color:#fff;font:inherit;font-size:1.6rem;line-height:1;cursor:pointer;display:flex;align-items:center;justify-content:center}
+.fzoom button:focus-visible{outline:3px solid #fff}
 .farm canvas{position:absolute;inset:0;touch-action:none;display:block}
 .fbar{position:absolute;left:8px;right:8px;top:8px;display:flex;justify-content:space-between;align-items:center;gap:8px;z-index:2;pointer-events:none}
 .flv{display:flex;align-items:center;gap:8px;background:rgba(29,18,48,.75);border-radius:999px;padding:5px 12px 5px 6px;pointer-events:auto}
@@ -396,8 +399,8 @@ body.scenemode .score,body.scenemode .play,body.scenemode .house{display:none}
 .gtool svg{width:32px;height:32px}
 .gtool.locked{opacity:.5}
 .gtool .stars{font-size:.75rem;color:var(--coin);letter-spacing:1px}.gtool .stars i{font-style:normal;color:rgba(255,255,255,.25)}
-.landbtn{width:96px}.landbtn b{font-weight:400;font-size:1.4rem}
-.fland{margin:0 6px;align-self:center;color:var(--muted);font-size:.95rem}
+.landbtn{width:76px}.landbtn b{font-weight:400;font-size:1.6rem;line-height:1}
+.fland{display:none;margin:0 6px;align-self:center;color:var(--muted);font-size:.8rem;line-height:1.25;flex:0 0 150px}
 .olist{display:flex;flex-direction:column;gap:8px;width:100%}
 .ocard{background:var(--row);border-radius:14px;padding:10px;display:grid;grid-template-columns:1fr auto;gap:6px;align-items:center;text-align:left}
 .ocard.ok{box-shadow:inset 0 0 0 3px #4fd36b}
@@ -2300,9 +2303,9 @@ body.playmode .verity{touch-action:none}
   });
 
 
-  // ================= FARM (FarmVille-style, pixel art like the house) =================
-  var FN=6;                                   // the whole map is 6x6; you own the top-left corner and buy more
-  var LAND=[{size:3,price:0,lv:1},{size:4,price:150,lv:3},{size:5,price:400,lv:5},{size:6,price:900,lv:7}];
+  // ================= FARM WORLD (release 1) =================
+  var FN=32,RING=7,CORE={x0:11,y0:11,x1:21,y1:21},STRIP=4,BMIN=2,BMAX=FN-2;
+  var EXP=[{price:200,lv:2},{price:350,lv:3},{price:500,lv:4},{price:700,lv:5},{price:950,lv:6},{price:1250,lv:7},{price:1600,lv:8},{price:2000,lv:9},{price:2500,lv:10},{price:3000,lv:10}];
   var FCROP={
     carrot:{lv:1,price:5,time:60,xp:2},strawberry:{lv:1,price:10,time:120,xp:3},tomato:{lv:2,price:8,time:90,xp:3},
     corn:{lv:3,price:12,time:150,xp:4},pumpkin:{lv:4,price:20,time:240,xp:6},watermelon:{lv:5,price:25,time:300,xp:8}
@@ -2315,8 +2318,9 @@ body.playmode .verity{touch-action:none}
     orange:{kind:"tree",name:"Orange tree",lv:4,price:120,time:300,give:"orange",n:2,xp:6}
   };
   var TORD=["apple","chicken","cow","orange"];
-  var XPL=[0,25,70,140,240,380,560,800,1100,1500,2000];
+  var XPL=[0,25,70,140,240,380,560,800,1100,1500,2000,2600,3300,4100,5000];
   var MAST=[10,30,60];
+  var WILDV={oak:{name:"Oak tree",coins:8,xp:3},pine:{name:"Pine tree",coins:8,xp:3},bush:{name:"Bush",coins:3,xp:1},rock:{name:"Rock",coins:6,xp:2},flowers:{name:"Wildflowers",coins:1,xp:1},tuft:{name:"Tall grass",coins:0,xp:1}};
   function wither(c){return Math.max(600,FCROP[c].time*8)*1000}
 
   // ---- items the farm makes (fridge, kitchen, orders) ----
@@ -2335,22 +2339,52 @@ body.playmode .verity{touch-action:none}
   tipFor=function(item){if(item==="mush")return 0;if(VAL[item])return VAL[item];var D=DISHES[item];return D?Math.round(D.need.reduce(function(t,c){return t+VAL[c]},0)*1.5):0};
   nameFor=function(item){return INAME[item]||(CROPS[item]||DISHES[item]||{name:item}).name};
 
-  // ---- state + moving the old garden over ----
+  // ---- world layout: road, pond, buildings, wild things ----
+  var ROAD=[],POND={},BUILD=[{k:"house",x:11,y:23,w:3,d:3},{k:"barn",x:18,y:23,w:3,d:3}];
+  for(var ry=21;ry<FN;ry++){ROAD.push([15,ry]);ROAD.push([16,ry])}
+  for(var rx=17;rx<18;rx++)ROAD.push([rx,24]);
+  var ROADK={};ROAD.forEach(function(p){ROADK[p[0]+","+p[1]]=1});
+  for(var py=2;py<10;py++)for(var px2=2;px2<10;px2++){var dx=(px2-5.5)/3.6,dy=(py-5.5)/2.8;if(dx*dx+dy*dy<1)POND[px2+","+py]=1}
+  function buildingAt(x,y){for(var i=0;i<BUILD.length;i++){var b=BUILD[i];if(x>=b.x&&x<b.x+b.w&&y>=b.y&&y<b.y+b.d)return b}return null}
+  function wildGen(x,y){
+    var k=x+","+y;if(ROADK[k]||POND[k]||buildingAt(x,y))return null;
+    var out=x<0||y<0||x>=FN||y>=FN,n=hash(x,y,11),cl=(Math.sin(x*.45)+Math.cos(y*.38)+Math.sin((x+y)*.21))/3;
+    if(out)return n<.62?(hash(x,y,5)<.5?"pine":"oak"):(n<.75?"bush":null);
+    if(x>=CORE.x0&&x<CORE.x1&&y>=CORE.y0&&y<CORE.y1){var spots={"12,12":"rock","19,13":"bush","13,19":"tuft","19,19":"rock"};return spots[k]||null}
+    if(Math.abs(x-15.5)<2.5&&y>=CORE.y1)return null;
+    if(cl>.35&&n<.5)return hash(x,y,6)<.6?"oak":"pine";
+    if(n<.05)return "bush";if(n<.08)return "rock";if(n<.15)return "flowers";if(n<.24)return "tuft";
+    return null;
+  }
+
+  // ---- state + moving older farms over ----
   function fInit(){
-    if(!st.farm){
-      st.farm={size:3,tiles:{},xp:0,lv:1,mast:{},orders:[]};
-      var old=st.garden&&!st.garden.migrated?st.garden.plots:[],spots=[[0,0],[1,0],[2,0],[0,1],[1,1],[2,1]],now=Date.now();
-      old.forEach(function(p,i){if(!spots[i]||!p)return;var k=spots[i].join(",");
-        if(p.s==="tilled")st.farm.tiles[k]={t:"plow"};
-        else if(p.s==="plant"&&FCROP[p.crop])st.farm.tiles[k]={t:"crop",c:p.crop,w:p.stage>=3?now-FCROP[p.crop].time*1000:(p.wet?now:0)}});
+    var now=Date.now();
+    if(!st.farm){st.farm={tiles:{},xp:0,lv:1,mast:{},orders:[]}}
+    var F=st.farm;
+    if(!F.b){
+      var old=F.tiles||{},nt={};
+      if(F.size){Object.keys(old).forEach(function(k){var a=k.split(",").map(Number);nt[(a[0]+12)+","+(a[1]+12)]=old[k]})}
+      else{var oldg=st.garden&&!st.garden.migrated?st.garden.plots:[],spots=[[0,0],[1,0],[2,0],[0,1],[1,1],[2,1]];
+        oldg.forEach(function(p,i){if(!spots[i]||!p)return;var kk=(spots[i][0]+12)+","+(spots[i][1]+12);
+          if(p.s==="tilled")nt[kk]={t:"plow"};else if(p.s==="plant"&&FCROP[p.crop])nt[kk]={t:"crop",c:p.crop,w:p.stage>=3?now-FCROP[p.crop].time*1000:(p.wet?now:0)}})}
+      F.tiles=nt;F.b={x0:CORE.x0,y0:CORE.y0,x1:CORE.x1,y1:CORE.y1};F.exp=0;F.cleared={};delete F.size;
       if(st.garden)st.garden.migrated=true;
     }
+    if(!F.cleared)F.cleared={};if(!F.orders)F.orders=[];if(!F.mast)F.mast={};
+    if(F.xp<(XPL[F.lv-1]||0))F.xp=XPL[F.lv-1]||0;
+    Object.keys(F.tiles).forEach(function(k){var T=F.tiles[k];
+      if(!T||(T.t==="crop"&&!FCROP[T.c])||((T.t==="tree"||T.t==="animal")&&!FTHING[T.k]))delete F.tiles[k]});
   }
   fInit();
-  var FM=function(){return st.farm};
   function tileAt(x,y){return st.farm.tiles[x+","+y]}
   function setTile(x,y,v){if(v)st.farm.tiles[x+","+y]=v;else delete st.farm.tiles[x+","+y]}
-  function owned(x,y){return x>=0&&y>=0&&x<st.farm.size&&y<st.farm.size}
+  function owned(x,y){var b=st.farm.b;return x>=b.x0&&y>=b.y0&&x<b.x1&&y<b.y1}
+  function inWorld(x,y){return x>=0&&y>=0&&x<FN&&y<FN}
+  function wildAt(x,y){if(st.farm.cleared[x+","+y])return null;if(inWorld(x,y)&&tileAt(x,y))return null;return wildGen(x,y)}
+  function groundAt(x,y){var k=x+","+y;if(!inWorld(x,y))return "forest";if(POND[k])return "water";if(ROADK[k])return "road";var T=tileAt(x,y);
+    if(T&&(T.t==="plow"||T.t==="crop"))return (T.t==="crop"&&T.w&&!cropState(T,Date.now()).withered)?"wet":"plow";
+    return owned(x,y)?"grass":"meadow"}
   function cropState(T,now){
     var C=FCROP[T.c];if(!T.w)return {stage:0,dry:true};
     var e=now-T.w,tt=C.time*1000;
@@ -2360,118 +2394,423 @@ body.playmode .verity{touch-action:none}
   }
   function thingReady(T,now){var D=FTHING[T.k];if(D.kind==="tree")return now-T.h>=D.time*1000;return T.f&&now-T.f>=D.time*1000}
 
-  // ---- pixel textures and sprites (drawn small, scaled up crisp, like the house blocks) ----
-  function mk(w,h,fn){var c=document.createElement("canvas");c.width=w;c.height=h;var g=c.getContext("2d");fn(function(x,y,ww,hh,col){g.fillStyle=col;g.fillRect(x,y,ww,hh)},g);return c}
-  function noiseTex(base,cols,seed,extra){return mk(16,16,function(px){px(0,0,16,16,base);for(var i=0;i<40;i++){var r=hash(i,seed,1),q=hash(i,seed,2);px(Math.floor(r*16),Math.floor(q*16),1,1,cols[i%cols.length])}if(extra)extra(px)})}
+  // ================= ART =================
+  // ground and buildings: the house's own block textures (8x8, crisp)
+  function tex(fn){var c=document.createElement("canvas");c.width=8;c.height=8;var g=c.getContext("2d");fn(function(x,y,w,h,col){g.fillStyle=col;g.fillRect(x,y,w,h)});return c}
+  function grassTex(base,a,b,seed,flowers){return tex(function(p){p(0,0,8,8,base);for(var i=0;i<6;i++)p(Math.floor(hash(i,seed,1)*8),Math.floor(hash(i,seed,2)*8),1,1,i%2?a:b);if(flowers){p(2,2,1,1,"#ffd400");p(6,5,1,1,"#ff8fc4")}})}
   var TX={
-    grass:noiseTex("#5dbb63",["#4fa856","#6fcb6a","#46a04c","#7ad673"],1),
-    grass2:noiseTex("#5dbb63",["#4fa856","#6fcb6a","#46a04c"],2,function(px){px(4,5,1,1,"#ffd400");px(11,10,1,1,"#ff8fc4");px(7,12,1,1,"#fff")}),
-    plow:noiseTex("#8b5a2b",["#7a4c22","#9c6a36"],3,function(px){for(var i=0;i<16;i+=4){px(0,i,16,1,"#6e4420");px(0,i+1,16,1,"#5a381a")}}),
-    wet:noiseTex("#5e3a1a",["#4a2c12","#6e4420"],4,function(px){for(var i=0;i<16;i+=4){px(0,i,16,1,"#3e2410");px(0,i+1,16,1,"#2f1b0b")}px(3,6,2,1,"#3d9bff");px(11,13,2,1,"#3d9bff")}),
-    side:noiseTex("#8b5a2b",["#6e4420","#a8703a","#5a381a"],5,function(px){px(0,0,16,3,"#5dbb63");for(var i=0;i<16;i+=2)px(i,3,1,1+(i%3),"#4fa856")})
+    grass:[grassTex("#5dbb63","#4fa856","#6fcb6a",1),grassTex("#5dbb63","#4fa856","#6fcb6a",2),grassTex("#5dbb63","#4fa856","#6fcb6a",3,true)],
+    meadow:[grassTex("#56b05a","#469a4b","#68c063",4),grassTex("#56b05a","#469a4b","#68c063",5),grassTex("#56b05a","#469a4b","#68c063",6,true)],
+    forest:[grassTex("#3f8f46","#347a3a","#4c9e52",7),grassTex("#3f8f46","#347a3a","#4c9e52",8)],
+    road:[tex(function(p){p(0,0,8,8,"#c9a26a");p(1,1,1,1,"#b08852");p(5,3,1,1,"#dcb980");p(3,6,1,1,"#b08852");p(6,6,1,1,"#a87c48")})],
+    plow:[tex(function(p){p(0,0,8,8,"#8b5a2b");for(var i=1;i<8;i+=3)p(0,i,8,1,"#5a381a");p(3,0,1,1,"#a8703a")})],
+    wet:[tex(function(p){p(0,0,8,8,"#5e3a1a");for(var i=1;i<8;i+=3)p(0,i,8,1,"#3a2210");p(5,0,1,1,"#3d6bdd")})],
+    water:[tex(function(p){p(0,0,8,8,"#3d9bff");p(1,2,3,1,"#8fcbff");p(5,5,2,1,"#8fcbff")}),tex(function(p){p(0,0,8,8,"#3d9bff");p(3,2,3,1,"#8fcbff");p(1,6,2,1,"#8fcbff")})],
+    brick:tex(function(p){p(0,0,8,8,"#e3d2c0");p(0,0,3,3,"#b5523b");p(4,0,4,3,"#b5523b");p(0,4,1,3,"#b5523b");p(2,4,5,3,"#b5523b")}),
+    plank:tex(function(p){p(0,0,8,8,"#b07a3f");p(0,0,8,1,"#c99055");p(0,4,8,1,"#c99055");p(0,3,8,1,"#8a5a2b");p(0,7,8,1,"#8a5a2b");p(2,0,1,3,"#8a5a2b");p(6,4,1,3,"#8a5a2b")}),
+    redplank:tex(function(p){p(0,0,8,8,"#c0392b");p(0,0,8,1,"#d9534a");p(0,4,8,1,"#d9534a");p(0,3,8,1,"#8e2a20");p(0,7,8,1,"#8e2a20");p(2,0,1,3,"#8e2a20");p(6,4,1,3,"#8e2a20")}),
+    roof:tex(function(p){p(0,0,8,8,"#c0392b");p(0,2,8,1,"#8e2a20");p(0,5,8,1,"#8e2a20");p(3,0,1,2,"#d9534a")}),
+    darkroof:tex(function(p){p(0,0,8,8,"#5a4a6a");p(0,2,8,1,"#3e3250");p(0,5,8,1,"#3e3250")})
   };
-  var G1="#3aa346",G2="#2f8f3a",G3="#7fd36b",BR="#8b5a2b",BR2="#5a381a";
-  var SPR={
-    s0:mk(16,16,function(p){p(3,14,2,1,"#f2d2a9");p(7,13,2,1,"#f2d2a9");p(11,14,2,1,"#f2d2a9");p(5,15,7,1,"#6e4420")}),
-    s1:mk(16,16,function(p){p(7,11,2,4,G1);p(4,9,3,2,G3);p(9,9,3,2,G3);p(5,8,2,1,G1);p(10,8,2,1,G1)}),
-    s2:mk(16,16,function(p){p(7,6,2,9,G1);p(3,9,4,2,G1);p(9,7,4,2,G1);p(4,5,3,2,G3);p(9,11,4,2,G3);p(2,8,2,1,G2);p(13,6,1,1,G2)}),
-    s3:mk(16,16,function(p){p(7,3,2,12,G1);p(2,8,5,3,G1);p(9,5,5,3,G1);p(3,3,4,3,G3);p(9,10,5,3,G3);p(1,9,2,1,G2);p(14,5,1,2,G2);p(5,12,2,2,G2)}),
-    dead:mk(16,16,function(p){p(7,8,2,7,"#9a7a4a");p(3,11,4,2,"#9a7a4a");p(9,12,4,2,"#7a5a32");p(2,13,2,1,"#7a5a32");p(5,7,3,1,"#b0905a")}),
-    carrot:mk(16,16,function(p){p(5,3,2,7,G1);p(7,1,2,9,G2);p(9,3,2,7,G1);p(3,5,2,3,G3);p(11,5,2,3,G3);p(5,10,6,4,"#ff8a1f");p(6,14,4,1,"#c96a10");p(6,11,1,1,"#ffb066")}),
-    tomato:mk(16,16,function(p){p(3,4,10,10,G1);p(4,5,3,3,G2);p(9,9,3,3,G2);p(7,2,2,3,G1);p(4,6,3,3,"#e0281b");p(9,5,3,3,"#e0281b");p(7,10,3,3,"#e0281b");p(4,6,1,1,"#ff8a7a");p(9,5,1,1,"#ff8a7a");p(7,10,1,1,"#ff8a7a");p(7,14,2,1,G2)}),
-    strawberry:mk(16,16,function(p){p(2,9,12,6,G1);p(3,8,4,2,G3);p(9,8,4,2,G3);p(3,11,3,3,"#ff3d6e");p(9,10,3,3,"#ff3d6e");p(6,12,3,3,"#ff3d6e");p(4,12,1,1,"#ffe14a");p(10,11,1,1,"#ffe14a");p(7,13,1,1,"#ffe14a")}),
-    corn:mk(16,24,function(p){p(7,2,2,22,G1);p(3,14,4,2,G1);p(9,10,5,2,G1);p(2,20,5,2,G2);p(9,18,5,2,G2);p(5,6,2,2,G3);p(9,8,3,8,"#ffd400");p(9,8,1,8,"#c99a1e");p(11,9,1,1,"#c99a1e");p(11,12,1,1,"#c99a1e");p(8,9,1,7,G3);p(7,0,2,2,"#e8c66a")}),
-    pumpkin:mk(16,16,function(p){p(0,13,16,2,G1);p(1,11,3,2,G3);p(12,10,3,3,G3);p(2,6,12,8,"#ff8a1f");p(3,5,10,1,"#ff8a1f");p(5,6,1,8,"#c96a10");p(10,6,1,8,"#c96a10");p(3,7,2,2,"#ffb066");p(7,3,2,3,G2)}),
-    watermelon:mk(16,16,function(p){p(0,14,16,1,G1);p(1,7,14,7,"#2fb85a");p(2,6,12,1,"#2fb85a");p(3,6,1,8,"#1f6b35");p(6,6,1,8,"#1f6b35");p(9,6,1,8,"#1f6b35");p(12,6,1,8,"#1f6b35");p(3,8,3,1,"#8ee08a");p(13,4,2,2,G1)}),
-    tree:mk(24,32,function(p){p(10,19,4,13,BR);p(11,20,1,10,"#a8703a");p(3,5,18,15,G2);p(5,3,14,2,G2);p(1,8,2,9,G2);p(21,8,2,9,G2);p(5,6,8,6,G1);p(14,10,5,5,G1);p(6,7,3,2,G3);p(15,11,2,1,G3);p(8,20,2,1,BR2)}),
-    chicken:mk(14,14,function(p){p(2,5,8,6,"#fff");p(1,6,2,3,"#e8e8e8");p(8,2,4,5,"#fff");p(12,4,2,1,"#ff8a1f");p(9,1,2,1,"#e0281b");p(10,0,1,1,"#e0281b");p(10,3,1,1,K);p(12,5,1,1,"#e0281b");p(3,7,4,2,"#e8e8e8");p(4,11,1,3,"#ff8a1f");p(7,11,1,3,"#ff8a1f")}),
-    cow:mk(22,16,function(p){p(2,4,15,7,"#fff");p(4,5,4,3,K);p(11,7,3,3,K);p(14,4,2,2,K);p(16,2,6,6,"#fff");p(17,1,1,2,"#e8d8b8");p(21,1,1,2,"#e8d8b8");p(18,4,1,1,K);p(17,6,5,3,"#ff9fb0");p(18,7,1,1,K);p(20,7,1,1,K);p(3,11,2,5,"#fff");p(7,11,2,5,"#fff");p(11,11,2,5,"#fff");p(14,11,2,5,"#fff");p(3,15,2,1,K);p(7,15,2,1,K);p(11,15,2,1,K);p(14,15,2,1,K);p(0,5,2,1,"#fff");p(0,6,1,3,K);p(6,11,4,2,"#ff9fb0")}),
-    hoe:mk(10,14,function(p){p(4,3,2,11,BR);p(1,0,6,3,"#9aa3b5");p(1,3,2,1,"#6b7480")}),
-    can:mk(14,12,function(p){p(2,4,8,8,"#3d9bff");p(3,4,1,8,"#7fc0ff");p(10,6,2,2,"#3d9bff");p(12,4,2,2,"#3d9bff");p(3,1,6,1,K);p(2,2,1,2,K);p(9,2,1,2,K)})
-  };
-  function fruitTree(col){return mk(24,32,function(p,g){g.drawImage(SPR.tree,0,0);[[6,8],[13,6],[16,13],[8,14],[11,10],[4,12]].forEach(function(a){p(a[0],a[1],2,2,col);p(a[0],a[1],1,1,"#fff")})})}
-  SPR.appleTree=fruitTree("#e0281b");SPR.orangeTree=fruitTree("#ff8a1f");
 
-  // ---- the farm screen ----
-  var fc,fg,fW=40,fH=20,fD=12,fox=0,foy=0,fDPR=1,fTool="hand",fRun=false,fParts=[],fHover=null,fTab="tools";
-  var FV={x:1.5,y:1.5,tx:1.5,ty:1.5,q:[],act:null,idle:2,hop:0,face:1};
-  function iso(u,v){return {x:fox+(u-v)*fW/2,y:foy+(u+v)*fH/2}}
-  function toTile(px,py){var a=(px-fox)/(fW/2),b=(py-foy)/(fH/2);return {x:Math.floor((a+b)/2),y:Math.floor((b-a)/2),fu:(a+b)/2,fv:(b-a)/2}}
-  function fLayout(){
-    var r=stg.getBoundingClientRect(),cw=r.width,ch=r.height;fDPR=Math.min(2,window.devicePixelRatio||1);
-    fc.width=cw*fDPR;fc.height=ch*fDPR;fc.style.width=cw+"px";fc.style.height=ch+"px";
-    var R=Math.min(FN,st.farm.size+1);   // zoom to your land plus one ring of land for sale
-    fW=Math.floor(Math.min((cw-12)/R,(ch-70)/(R*.5+.8)));fH=fW/2;fD=fW*.28;
-    fox=cw/2;foy=Math.max(56,(ch-R*fH)/2+fW*.3);
+  // living things: smooth outlined drawings with light and shadow (approved style)
+  var G=null;
+  function vOl(w){G.strokeStyle=K;G.lineWidth=w||3;G.lineJoin="round";G.lineCap="round"}
+  function vEll(x,y,rx,ry,rot){return function(){G.beginPath();G.ellipse(x,y,rx,ry,rot||0,0,7)}}
+  function vSh(path,base,dark){G.save();path();G.fillStyle=dark;G.fill();G.clip();G.translate(-4,-4);path();G.fillStyle=base;G.fill();G.restore();path();vOl();G.stroke()}
+  function vGleam(x,y,rx,ry,col){G.beginPath();G.ellipse(x,y,rx,ry,-.5,0,7);G.fillStyle=col;G.fill()}
+  function vShadow(x,y,rx){G.beginPath();G.ellipse(x,y,rx,rx*.32,0,0,7);G.fillStyle="rgba(0,0,0,.2)";G.fill()}
+  function vDark(hex,f){var n=parseInt(hex.slice(1),16);return "rgb("+Math.round((n>>16&255)*f)+","+Math.round((n>>8&255)*f)+","+Math.round((n&255)*f)+")"}
+  function vLeg(x,y,top,col,hoof,w){var p=function(){G.beginPath();G.moveTo(x-w,y-top);G.lineTo(x-w*.85,y);G.lineTo(x+w*.85,y);G.lineTo(x+w,y-top);G.closePath()};
+    G.save();p();G.fillStyle=col;G.fill();G.clip();G.fillStyle=vDark(col,.8);G.fillRect(x+w*.15,y-top,w*2,top);if(hoof){G.fillStyle=hoof;G.fillRect(x-w*1.2,y-6,w*2.4,6)}G.restore();p();vOl(2.5);G.stroke()}
+  function vStem(x1,y1,x2,y2,col,w){G.strokeStyle=K;G.lineWidth=(w||4)+3;G.lineCap="round";G.beginPath();G.moveTo(x1,y1);G.lineTo(x2,y2);G.stroke();G.strokeStyle=col;G.lineWidth=w||4;G.beginPath();G.moveTo(x1,y1);G.lineTo(x2,y2);G.stroke()}
+  function vLeaf(x,y,len,ang,col,dark){G.save();G.translate(x,y);G.rotate(ang);var dk=dark||vDark(col,.72),p=function(){G.beginPath();G.moveTo(0,0);G.quadraticCurveTo(len*.45,-len*.62,len,0);G.quadraticCurveTo(len*.5,len*.5,0,0)};
+    G.save();p();G.fillStyle=dk;G.fill();G.clip();G.translate(0,-len*.12);p();G.fillStyle=col;G.fill();G.restore();
+    p();vOl(len<22?2:2.6);G.stroke();G.beginPath();G.moveTo(len*.18,-len*.03);G.quadraticCurveTo(len*.5,-len*.1,len*.78,-len*.02);G.strokeStyle=dk;G.lineWidth=1.2;G.stroke();G.restore()}
+  var GR="#3aa346",GD="#2b7d36";
+  var ART={
+    oak:{box:[150,165,75,150],draw:function(){var x=0,y=0;vShadow(6,0,46);
+      vSh(function(){G.beginPath();G.moveTo(-12,0);G.quadraticCurveTo(-7,-6,-7,-30);G.lineTo(-9,-58);G.lineTo(8,-58);G.lineTo(7,-30);G.quadraticCurveTo(7,-6,14,0);G.closePath()},"#8b5a2b","#5a381a");
+      vSh(function(){G.beginPath();G.moveTo(4,-44);G.lineTo(22,-60);G.lineTo(18,-64);G.lineTo(2,-52);G.closePath()},"#8b5a2b","#5a381a");
+      G.strokeStyle="#5a381a";G.lineWidth=2;G.beginPath();G.moveTo(-2,-8);G.lineTo(-3,-26);G.stroke();
+      [[-26,-76,24,"#2b7d36"],[24,-80,24,"#2b7d36"],[0,-100,26,"#2f8a3a"],[-30,-96,20,"#2f8a3a"],[30,-100,20,"#2f8a3a"],[-14,-84,26,"#3aa346"],[16,-86,26,"#3aa346"],[0,-114,22,"#3aa346"]].forEach(function(c){vSh(vEll(c[0],c[1],c[2],c[2]*.86),c[3],"#22662c")});
+      [[-18,-96,9],[8,-120,8],[18,-98,7],[-30,-104,6]].forEach(function(c){vGleam(c[0],c[1],c[2],c[2]*.6,"rgba(160,230,120,.55)")});
+      G.strokeStyle="#22662c";G.lineWidth=2;[[-6,-78],[22,-74],[-34,-84],[10,-104],[-20,-110]].forEach(function(a){G.beginPath();G.arc(a[0],a[1],4,.2,2.4);G.stroke()})}},
+    pine:{box:[100,150,50,135],draw:function(){vShadow(5,0,32);
+      vSh(function(){G.beginPath();G.rect(-6,-22,12,22)},"#7a4a22","#4e2e14");
+      [[0,-22,40,40],[0,-50,34,36],[0,-76,26,32],[0,-98,17,26]].forEach(function(t,i){
+        vSh(function(){G.beginPath();G.moveTo(-t[2],t[1]);G.quadraticCurveTo(0,t[1]+6,t[2],t[1]);G.lineTo(0,t[1]-t[3]-8);G.closePath()},i%2?"#2f8a3a":"#287a34","#1e5c28");
+        G.strokeStyle="#4caa58";G.lineWidth=2;G.beginPath();G.moveTo(-t[2]*.45,t[1]-4);G.lineTo(-t[2]*.15,t[1]-t[3]*.55);G.stroke()})}},
+    bush:{box:[80,56,40,46],draw:function(){vShadow(3,0,30);[[-14,-14,15,"#2b7d36"],[14,-14,15,"#2b7d36"],[0,-22,18,"#3aa346"],[-6,-10,14,"#3aa346"]].forEach(function(c){vSh(vEll(c[0],c[1],c[2],c[2]*.82),c[3],"#22662c")});vGleam(-6,-28,6,3.5,"rgba(160,230,120,.6)")}},
+    rock:{box:[70,46,35,36],draw:function(){vShadow(2,0,28);vSh(function(){G.beginPath();G.moveTo(-26,0);G.lineTo(-22,-16);G.lineTo(-8,-26);G.lineTo(12,-24);G.lineTo(24,-12);G.lineTo(26,0);G.closePath()},"#a7a9b4","#7c7e8a");G.strokeStyle="#7c7e8a";G.lineWidth=2;G.beginPath();G.moveTo(-8,-18);G.lineTo(2,-10);G.stroke();vGleam(-10,-20,5,2.5,"rgba(255,255,255,.5)")}},
+    flowers:{box:[56,40,28,34],draw:function(){[[-12,0,"#ff5fa2"],[0,-3,"#ffd400"],[12,1,"#7b3fe4"],[-5,4,"#fff"],[7,5,"#ff8a1f"]].forEach(function(a){vStem(a[0],a[1],a[0],a[1]-10,GR,2);for(var i=0;i<5;i++){var t=i/5*Math.PI*2;G.beginPath();G.ellipse(a[0]+Math.cos(t)*3.5,a[1]-12+Math.sin(t)*3.5,2.6,2,t,0,7);G.fillStyle=a[2];G.fill();vOl(1.5);G.stroke()}G.beginPath();G.arc(a[0],a[1]-12,1.8,0,7);G.fillStyle=a[2]==="#ffd400"?"#ff8a1f":"#ffd400";G.fill()})}},
+    tuft:{box:[44,30,22,26],draw:function(){[-10,-4,2,8,14].forEach(function(dx,i){vStem(dx,0,dx+(i%2?3:-3),-14-(i%3)*4,i%2?"#4caa58":"#3aa346",2)})}},
+    seeds:{box:[60,30,30,22],draw:function(){[[-14,0],[0,-4],[14,0]].forEach(function(a){vSh(vEll(a[0],a[1],8,4),"#6e4420","#4a2c12");G.fillStyle="#f2d2a9";G.beginPath();G.arc(a[0]-1,a[1]-2,1.6,0,7);G.fill()})}},
+    sprout:{box:[50,40,25,34],draw:function(){vStem(0,0,0,-12,GR,3);vLeaf(0,-12,13,-2.6,"#7fd36b");vLeaf(0,-12,13,-.5,"#7fd36b")}},
+    young:{box:[60,56,30,50],draw:function(){vStem(0,0,0,-28,GR,3);vLeaf(0,-10,16,-2.7,GR);vLeaf(0,-16,16,-.4,GR);vLeaf(0,-24,14,-2.4,"#4caa58");vLeaf(0,-28,13,-.8,"#4caa58")}},
+    big:{box:[70,64,35,58],draw:function(){vStem(0,0,0,-36,GR,4);[[-8,-2.8],[-14,-.3],[-20,-2.5],[-26,-.5],[-32,-2.2],[-36,-.9]].forEach(function(a,i){vLeaf(0,a[0],18-i,a[1],i%2?GR:"#4caa58")})}},
+    dead:{box:[60,50,30,44],draw:function(){vStem(0,0,-2,-20,"#9a7a4a",3);vLeaf(-1,-8,14,2.6,"#b0905a","#7a5a32");vLeaf(-1,-14,14,.6,"#9a7a4a","#6e5030");vLeaf(-2,-20,10,2.2,"#b0905a","#7a5a32")}},
+    carrot:{box:[76,62,38,52],draw:function(){[[-14,0],[2,-4],[16,1]].forEach(function(a){vLeaf(a[0],a[1]-8,18,-1.9,GR);vLeaf(a[0],a[1]-8,20,-1.25,GD);vLeaf(a[0],a[1]-8,16,-.8,GR);
+      vSh(function(){G.beginPath();G.moveTo(a[0]-7,a[1]-8);G.quadraticCurveTo(a[0],a[1]-12,a[0]+7,a[1]-8);G.lineTo(a[0]+5,a[1]+2);G.lineTo(a[0]-5,a[1]+2);G.closePath()},"#ff8a1f","#c96a10")})}},
+    strawberry:{box:[76,48,38,40],draw:function(){[[-14,-6],[12,-6],[0,-12],[-4,-2],[8,-1]].forEach(function(c,i){vLeaf(c[0],c[1],16,i%2?-.4:-2.7,i%2?GR:"#4caa58")});
+      [[-12,-6],[4,-10],[14,-4],[-2,-1]].forEach(function(a){vSh(function(){G.beginPath();G.moveTo(a[0]-5,a[1]-4);G.quadraticCurveTo(a[0],a[1]-7,a[0]+5,a[1]-4);G.quadraticCurveTo(a[0]+4,a[1]+4,a[0],a[1]+6);G.quadraticCurveTo(a[0]-4,a[1]+4,a[0]-5,a[1]-4);G.closePath()},"#ff3d6e","#c81f4e");G.fillStyle="#ffe14a";G.fillRect(a[0]-2,a[1]-1,1.5,1.5);G.fillRect(a[0]+1,a[1]+1,1.5,1.5)})}},
+    tomato:{box:[70,80,35,72],draw:function(){vStem(-10,0,-10,-52,"#c99a5a",3);vStem(0,0,0,-46,GR,3);[[-10,-2.7],[-18,-.4],[-26,-2.6],[-34,-.5],[-42,-2.3]].forEach(function(a,i){vLeaf(0,a[0],16,a[1],i%2?GR:"#4caa58")});
+      [[8,-20],[-6,-32],[6,-40],[-8,-14]].forEach(function(a){vSh(vEll(a[0],a[1],7,6.5),"#e0281b","#a81a12");vGleam(a[0]-2,a[1]-2,2.4,1.6,"rgba(255,255,255,.7)")})}},
+    corn:{box:[70,110,35,102],draw:function(){vStem(0,0,0,-86,"#4caa58",5);[[-10,-2.6,24],[-22,-.5,24],[-36,-2.7,22],[-50,-.4,20],[-64,-2.5,18]].forEach(function(a,i){vLeaf(0,a[0],a[2],a[1],i%2?GR:"#4caa58")});
+      vSh(vEll(9,-50,6,15,.15),"#ffd400","#c99a1e");G.strokeStyle="#c99a1e";G.lineWidth=1.5;for(var i=-8;i<12;i+=5){G.beginPath();G.moveTo(5,-50+i);G.lineTo(13,-49+i);G.stroke()}
+      vLeaf(4,-38,16,-1.2,"#7fd36b");vStem(0,-86,-6,-96,"#e8c66a",2);vStem(0,-86,6,-96,"#e8c66a",2)}},
+    pumpkin:{box:[90,56,45,46],draw:function(){vLeaf(-20,-4,20,.2,GR);vLeaf(22,-3,20,Math.PI-.2,GR);vShadow(0,0,30);
+      vSh(vEll(-11,-16,13,15),"#ff8a1f","#c96a10");vSh(vEll(11,-16,13,15),"#ff8a1f","#c96a10");vSh(vEll(0,-16,14,17),"#ffa040","#d9741a");vGleam(-4,-24,4,2.5,"rgba(255,230,180,.7)");vStem(0,-31,4,-38,"#2f8a3a",4)}},
+    watermelon:{box:[90,52,45,44],draw:function(){vLeaf(-26,-2,18,.1,GR);vLeaf(26,-2,18,Math.PI-.1,GR);vShadow(0,0,32);
+      var m=vEll(0,-14,26,15);vSh(m,"#2fb85a","#1f8a41");G.save();m();G.clip();G.strokeStyle="#1f6b35";G.lineWidth=4;[-16,-6,4,14].forEach(function(d){G.beginPath();G.moveTo(d-4,-30);G.quadraticCurveTo(d+3,-14,d-4,2);G.stroke()});G.restore();m();vOl();G.stroke();vGleam(-10,-22,7,3,"rgba(220,255,220,.6)")}},
+    cow:{box:[140,115,58,104],draw:function(){var x=0,y=0;vShadow(4,0,46);
+      vLeg(-28,0,30,"#e8e8e8","#3b3029",5);vLeg(22,0,30,"#e8e8e8","#3b3029",5);
+      G.strokeStyle=K;G.lineWidth=5;G.beginPath();G.moveTo(-38,-46);G.quadraticCurveTo(-48,-30,-44,-16);G.stroke();G.strokeStyle="#fff";G.lineWidth=2.5;G.stroke();vSh(vEll(-44,-14,4,7),"#3b3029","#231a14");
+      var body=function(){G.beginPath();G.moveTo(-38,-58);G.bezierCurveTo(-46,-36,-40,-24,-28,-24);G.lineTo(20,-24);G.bezierCurveTo(34,-24,38,-40,32,-58);G.bezierCurveTo(22,-66,-28,-66,-38,-58);G.closePath()};
+      vSh(body,"#ffffff","#d6d6dc");G.save();body();G.clip();G.fillStyle="#2c2420";G.beginPath();G.moveTo(-30,-62);G.bezierCurveTo(-14,-66,-8,-50,-18,-42);G.bezierCurveTo(-28,-36,-40,-44,-30,-62);G.fill();G.beginPath();G.moveTo(6,-52);G.bezierCurveTo(18,-56,24,-42,14,-36);G.bezierCurveTo(4,-32,-2,-44,6,-52);G.fill();G.restore();body();vOl();G.stroke();
+      vSh(vEll(-6,-24,9,6),"#ffaac0","#e8829c");vLeg(-20,0,28,"#ffffff","#3b3029",5.5);vLeg(28,0,28,"#ffffff","#3b3029",5.5);
+      vSh(function(){G.beginPath();G.moveTo(18,-62);G.lineTo(34,-70);G.lineTo(40,-46);G.lineTo(24,-34);G.closePath()},"#ffffff","#d6d6dc");
+      vSh(vEll(34,-76,10,5,-.4),"#ffffff","#d6d6dc");vSh(vEll(34,-76,5,2.5,-.4),"#ffb0c4","#e8829c");
+      vSh(function(){G.beginPath();G.moveTo(44,-82);G.quadraticCurveTo(44,-94,52,-96);G.quadraticCurveTo(48,-90,50,-82);G.closePath()},"#efe2c2","#cdb98e");
+      var head=function(){G.beginPath();G.moveTo(34,-74);G.bezierCurveTo(40,-90,64,-90,66,-74);G.lineTo(70,-48);G.bezierCurveTo(70,-38,50,-36,44,-46);G.closePath()};
+      vSh(head,"#ffffff","#d6d6dc");G.save();head();G.clip();G.fillStyle="#2c2420";G.beginPath();G.moveTo(40,-90);G.bezierCurveTo(50,-88,52,-76,44,-70);G.lineTo(34,-74);G.closePath();G.fill();G.restore();head();vOl();G.stroke();
+      vSh(vEll(60,-46,12,9),"#ffb0c4","#e8829c");G.fillStyle="#7a3a4a";G.beginPath();G.ellipse(56,-47,2,1.6,0,0,7);G.ellipse(64,-46,2,1.6,0,0,7);G.fill();
+      G.fillStyle=K;G.beginPath();G.ellipse(56,-70,3,3.4,0,0,7);G.fill();G.fillStyle="#fff";G.beginPath();G.arc(57,-71.5,1.1,0,7);G.fill()}},
+    chicken:{box:[60,70,30,64],draw:function(){vShadow(0,0,16);
+      G.strokeStyle="#e0901a";G.lineWidth=3;G.beginPath();G.moveTo(-3,-14);G.lineTo(-4,-1);G.lineTo(-8,0);G.moveTo(4,-14);G.lineTo(5,-1);G.lineTo(1,0);G.stroke();
+      vSh(function(){G.beginPath();G.moveTo(-12,-24);G.quadraticCurveTo(-24,-40,-18,-44);G.quadraticCurveTo(-12,-36,-6,-30);G.closePath()},"#ffffff","#d6d6dc");
+      vSh(function(){G.beginPath();G.moveTo(-14,-26);G.bezierCurveTo(-16,-12,-4,-10,6,-12);G.bezierCurveTo(16,-14,16,-30,10,-34);G.bezierCurveTo(12,-46,4,-52,-2,-46);G.bezierCurveTo(-6,-34,-12,-32,-14,-26);G.closePath()},"#ffffff","#d6d6dc");
+      vSh(function(){G.beginPath();G.moveTo(-8,-26);G.quadraticCurveTo(2,-30,6,-20);G.quadraticCurveTo(-2,-14,-8,-26);G.closePath()},"#eeeeee","#c8c8d0");
+      vSh(function(){G.beginPath();G.moveTo(-4,-48);G.quadraticCurveTo(-4,-56,0,-54);G.quadraticCurveTo(2,-58,5,-54);G.quadraticCurveTo(9,-54,7,-48);G.closePath()},"#e0281b","#a81a12");
+      vSh(function(){G.beginPath();G.moveTo(8,-44);G.lineTo(15,-41);G.lineTo(8,-38);G.closePath()},"#ffb000","#d98a00");
+      vSh(vEll(8,-36,2.5,4),"#e0281b","#a81a12");G.fillStyle=K;G.beginPath();G.arc(4,-44,1.8,0,7);G.fill()}},
+    farmer:{box:[0,0,0,0],draw:function(){}}
+  };
+  function treeWithFruit(col,dark){return {box:ART.oak.box,draw:function(){ART.oak.draw();[[-20,-70],[10,-78],[24,-92],[-8,-100],[-30,-90],[14,-108],[2,-84]].forEach(function(a){vSh(vEll(a[0],a[1],6,6.5),col,dark);vGleam(a[0]-2,a[1]-2,2,1.4,"rgba(255,255,255,.7)");G.strokeStyle=K;G.lineWidth=2;G.beginPath();G.moveTo(a[0],a[1]-6);G.lineTo(a[0]+1,a[1]-9);G.stroke()})}}}
+  ART.appleTree=treeWithFruit("#e0281b","#a81a12");ART.orangeTree=treeWithFruit("#ff8a1f","#c96a10");
+  ART.youngTree={box:[90,100,45,92],draw:function(){vShadow(3,0,26);vSh(function(){G.beginPath();G.moveTo(-5,0);G.lineTo(-4,-34);G.lineTo(4,-34);G.lineTo(5,0);G.closePath()},"#8b5a2b","#5a381a");[[-12,-46,16,GD],[12,-48,16,GD],[0,-60,18,GR],[-4,-44,16,GR]].forEach(function(c){vSh(vEll(c[0],c[1],c[2],c[2]*.85),c[3],"#22662c")})}};
+
+  // draw each picture once per zoom level, then reuse it (keeps it fast with lots of trees)
+  var SC={},SCZ=0;
+  function sprite(name,s){
+    var key=name+"|"+s.toFixed(3);if(SC[key])return SC[key];
+    var A=ART[name],b=A.box,dpr=Math.min(2,window.devicePixelRatio||1),c=document.createElement("canvas");
+    c.width=Math.ceil(b[0]*s*dpr);c.height=Math.ceil(b[1]*s*dpr);var g=c.getContext("2d");
+    g.setTransform(s*dpr,0,0,s*dpr,b[2]*s*dpr,b[3]*s*dpr);G=g;A.draw();G=null;
+    var r={c:c,w:b[0]*s,h:b[1]*s,ax:b[2]*s,ay:b[3]*s};SC[key]=r;return r;
   }
-  function fBuild(){
-    stg.className="sstage farm";
-    stg.innerHTML='<canvas id="fc" aria-label="Farm"></canvas><div class="fbar"><div class="flv"><b id="flv">Lv 1</b><div class="fxp"><i id="fxp"></i></div><span id="fxpt"></span></div><button class="ford" id="ford" type="button">Orders<i id="fordn" hidden></i></button></div>';
-    fc=document.getElementById("fc");fg=fc.getContext("2d");
-    fTool="hand";fTab="tools";fLayout();fTray();fBar();
-    if(!fRun){fRun=true;fLast=performance.now();requestAnimationFrame(fFrame)}
-    sTip(fDefaultTip());fOrdersFill();
-    document.getElementById("ford").addEventListener("click",fOrders);
-    fc.addEventListener("pointerdown",fDown);fc.addEventListener("pointermove",fMove);fc.addEventListener("pointerup",fUp);fc.addEventListener("pointercancel",fUp);fc.addEventListener("pointerleave",function(){fHover=null});
+  function artURL(name){var s=Math.min(46/ART[name].box[0],46/ART[name].box[1]),sp=sprite(name,s);return sp.c.toDataURL()}
+
+  // ================= CAMERA + DRAWING =================
+  var fc,fx,fW=64,camX=0,camY=0,fDPR=1,fRun=false,fLast=0,fParts=[],fTool="hand",fTab="tools",fSel=null,fConfirm=null;
+  var FV={x:15.5,y:15.5,tx:15.5,ty:15.5,q:[],act:null,idle:2,hop:0,face:1};
+  var ANI={};
+  function iso(u,v){return {x:camX+(u-v)*fW/2,y:camY+(u+v)*fW/4}}
+  function unIso(px,py){var a=(px-camX)/(fW/2),b=(py-camY)/(fW/4);return {u:(a+b)/2,v:(b-a)/2}}
+  function cw(){return fc.width/fDPR}function chh(){return fc.height/fDPR}
+  function centerOn(u,v){camX=cw()/2-(u-v)*fW/2;camY=chh()/2-(u+v)*fW/4}
+  function clampCam(){var c=unIso(cw()/2,chh()/2),u=Math.max(1,Math.min(FN-1,c.u)),v=Math.max(1,Math.min(FN-1,c.v));if(u!==c.u||v!==c.v)centerOn(u,v)}
+  function zoomTo(nw,px,py){nw=Math.max(30,Math.min(150,Math.round(nw/2)*2));if(nw===fW)return;var w=unIso(px,py);fW=nw;camX=px-(w.u-w.v)*fW/2;camY=py-(w.u+w.v)*fW/4;clampCam();GT={}}
+  function fLayout(keep){
+    var r=stg.getBoundingClientRect(),c=keep?unIso(cw()/2,chh()/2):null;fDPR=Math.min(2,window.devicePixelRatio||1);
+    fc.width=r.width*fDPR;fc.height=r.height*fDPR;fc.style.width=r.width+"px";fc.style.height=r.height+"px";
+    if(!keep){var b=st.farm.b,span=(b.x1-b.x0)+(b.y1-b.y0);fW=Math.max(44,Math.min(110,Math.round(Math.min(r.width/8.5,r.width*.75/span*2,r.height*.8/span*4)/2)*2));centerOn((b.x0+b.x1)/2,(b.y0+b.y1)/2)}else centerOn(c.u,c.v);
+    GT={};clampCam();
   }
-  window.addEventListener("resize",function(){if(where==="garden"&&fc)fLayout()});
+  // ground tiles drawn once per zoom
+  var GT={};
+  function groundImg(type,variant){
+    var key=type+variant;if(GT[key])return GT[key];
+    var set=TX[type],t=set[variant%set.length],c=document.createElement("canvas"),w=fW,h=fW/2;c.width=Math.ceil(w*fDPR)+2;c.height=Math.ceil(h*fDPR)+2;
+    var g=c.getContext("2d");g.imageSmoothingEnabled=false;g.setTransform(w/2*fDPR,h/2*fDPR,-w/2*fDPR,h/2*fDPR,(w/2)*fDPR+1,1);
+    g.drawImage(t,0,0,8,8,-.004,-.004,1.008,1.008);
+    if(type==="plow"||type==="wet"){g.strokeStyle="rgba(0,0,0,.25)";g.lineWidth=.03;g.strokeRect(.04,.04,.92,.92)}
+    GT[key]=c;return c;
+  }
+  function face(tx,o,ax,ay,shade,rep){ // repeat an 8x8 house texture across a face (rep = [cols, rows])
+    var cols=rep?rep[0]:1,rows=rep?rep[1]:1;
+    for(var i=0;i<cols;i++)for(var j=0;j<rows;j++){fx.save();fx.setTransform(fDPR*ax.x/cols,fDPR*ax.y/cols,fDPR*ay.x/rows,fDPR*ay.y/rows,fDPR*(o.x+ax.x*i/cols+ay.x*j/rows),fDPR*(o.y+ax.y*i/cols+ay.y*j/rows));fx.imageSmoothingEnabled=false;fx.drawImage(tx,0,0,8,8,-.01,-.01,1.02,1.02);if(shade){fx.fillStyle=shade;fx.fillRect(-.01,-.01,1.02,1.02)}fx.restore()}
+  }
+  function line(pts,col,w){fx.strokeStyle=col;fx.lineWidth=w;fx.lineJoin="round";fx.beginPath();fx.moveTo(pts[0].x,pts[0].y);for(var i=1;i<pts.length;i++)fx.lineTo(pts[i].x,pts[i].y);fx.stroke()}
+  function quad(p,col){fx.fillStyle=col;fx.beginPath();fx.moveTo(p[0].x,p[0].y);for(var i=1;i<p.length;i++)fx.lineTo(p[i].x,p[i].y);fx.closePath();fx.fill()}
+  function drawBuilding(B){
+    var red=B.k==="barn",Hh=fW*(red?1.15:.95),u0=B.x,v0=B.y,u1=B.x+B.w,v1=B.y+B.d;
+    var a=iso(u0,v1),b=iso(u1,v1),c=iso(u1,v0),up={x:0,y:-Hh};
+    var wall=red?TX.redplank:TX.brick,rows=red?3:3;
+    face(wall,{x:a.x,y:a.y-Hh},{x:b.x-a.x,y:b.y-a.y},{x:0,y:Hh},"rgba(0,0,0,.06)",[B.w*2,rows]);
+    face(wall,{x:b.x,y:b.y-Hh},{x:c.x-b.x,y:c.y-b.y},{x:0,y:Hh},"rgba(0,0,0,.26)",[B.d*2,rows]);
+    // gable roof along u
+    var p0=iso(u0,v0),p1=iso(u1,v0),p2=iso(u1,v1),p3=iso(u0,v1),m=function(p,q){return {x:(p.x+q.x)/2,y:(p.y+q.y)/2}},r0=m(p0,p3),r1=m(p1,p2),RH=Hh+fW*(red?.75:.6),ov=fW*.08;
+    var rt=red?TX.darkroof:TX.roof;
+    // gable end (front-right triangle) in wall texture
+    var gb=[{x:p2.x,y:p2.y-Hh},{x:p1.x,y:p1.y-Hh},{x:r1.x,y:r1.y-RH}];
+    fx.save();fx.beginPath();fx.moveTo(gb[0].x,gb[0].y);fx.lineTo(gb[1].x,gb[1].y);fx.lineTo(gb[2].x,gb[2].y);fx.closePath();fx.clip();face(wall,{x:p2.x,y:p2.y-RH},{x:p1.x-p2.x,y:p1.y-p2.y},{x:0,y:RH-Hh+2},"rgba(0,0,0,.3)",[B.d*2,2]);fx.restore();
+    face(rt,{x:p3.x-ov,y:p3.y-Hh+ov*.5},{x:p2.x-p3.x+ov*2,y:p2.y-p3.y},{x:r0.x-p3.x+ov,y:r0.y-RH-(p3.y-Hh)-ov*.5},"rgba(0,0,0,.02)",[B.w*2,2]);
+    // outlines
+    fx.lineCap="round";line([{x:p3.x,y:p3.y-Hh},a,b,c,{x:c.x,y:c.y-Hh}],K,2.5);line([{x:b.x,y:b.y},{x:b.x,y:b.y-Hh}],K,2.5);
+    line([{x:p3.x-ov,y:p3.y-Hh+ov*.5},{x:p2.x+ov,y:p2.y-Hh+ov*.5},{x:r1.x,y:r1.y-RH},{x:r0.x,y:r0.y-RH},{x:p3.x-ov,y:p3.y-Hh+ov*.5}],K,2.5);line([gb[0],gb[2],gb[1]],K,2.5);
+    // doors and windows on the front face
+    var fpt=function(t,h){return {x:a.x+(b.x-a.x)*t,y:a.y+(b.y-a.y)*t-h}},dw=.5/B.w*1.6;
+    if(red){var d0=fpt(.5-dw*.75,0),d1=fpt(.5+dw*.75,0),dh=Hh*.72;var dr=[d0,d1,{x:d1.x,y:d1.y-dh},{x:d0.x,y:d0.y-dh}];quad(dr,"#7a2018");line(dr.concat([d0]),"#fff",2.5);line([d0,{x:d1.x,y:d1.y-dh}],"#fff",2.5);line([d1,{x:d0.x,y:d0.y-dh}],"#fff",2.5);
+      var lw=[fpt(.42,Hh*1.25),fpt(.58,Hh*1.25)];}
+    else{var e0=fpt(.5-dw*.4,0),e1=fpt(.5+dw*.4,0),eh=Hh*.62,door=[e0,e1,{x:e1.x,y:e1.y-eh},{x:e0.x,y:e0.y-eh}];quad(door,"#7a4320");line(door.concat([e0]),K,2.5);
+      [.2,.8].forEach(function(t){var w0=fpt(t-.08,Hh*.35),w1=fpt(t+.08,Hh*.35),wh=Hh*.32,win=[w0,w1,{x:w1.x,y:w1.y-wh},{x:w0.x,y:w0.y-wh}];quad(win,"#9fd8ff");line(win.concat([w0]),K,2.5);line([{x:(w0.x+w1.x)/2,y:(w0.y+w1.y)/2},{x:(w0.x+w1.x)/2,y:(w0.y+w1.y)/2-wh}],K,1.5)});
+      var ch0=m(r0,r1),chx=ch0.x+fW*.35,chy=ch0.y-RH+fW*.25;quad([{x:chx-fW*.07,y:chy},{x:chx+fW*.07,y:chy+fW*.03},{x:chx+fW*.07,y:chy-fW*.3},{x:chx-fW*.07,y:chy-fW*.33}],"#b5523b");line([{x:chx-fW*.07,y:chy},{x:chx-fW*.07,y:chy-fW*.33},{x:chx+fW*.07,y:chy-fW*.3},{x:chx+fW*.07,y:chy+fW*.03}],K,2)}
+  }
+  function drawSprite(name,u,v,scale,opts){
+    opts=opts||{};var s=fW/96*scale,sp=sprite(name,Math.round(s*50)/50),p=iso(u,v),bx=opts.dx||0,by=opts.dy||0;
+    fx.save();fx.setTransform(fDPR,0,0,fDPR,0,0);fx.translate(Math.round(p.x+bx),Math.round(p.y+by));
+    if(opts.flip)fx.scale(-1,1);if(opts.squash)fx.scale(1+opts.squash,1-opts.squash);if(opts.tint){fx.globalAlpha=.6}
+    fx.drawImage(sp.c,-sp.ax,-sp.ay,sp.w,sp.h);fx.restore();
+    if(opts.tint){fx.save();fx.setTransform(fDPR,0,0,fDPR,0,0);fx.globalCompositeOperation="source-atop";fx.restore()}
+    return {x:p.x,y:p.y-sp.ay,w:sp.w,h:sp.h};
+  }
+  var IMG={};function itemImg(k){if(!IMG[k]){var im=new Image();im.src="data:image/svg+xml,"+encodeURIComponent('<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48">'+ICON[k]+'</svg>');IMG[k]=im}return IMG[k]}
+  function bubble(x,y,k,now){var b=Math.sin(now/250)*fW*.04,r=Math.max(10,fW*.17);fx.fillStyle="#fff3c4";fx.strokeStyle=K;fx.lineWidth=2;fx.beginPath();fx.arc(x,y-r+b,r,0,7);fx.fill();fx.stroke();
+    fx.beginPath();fx.moveTo(x-r*.3,y-r*.15+b);fx.lineTo(x,y+r*.35+b);fx.lineTo(x+r*.3,y-r*.15+b);fx.fill();
+    if(k==="drop"){fx.fillStyle="#3d9bff";fx.beginPath();fx.moveTo(x,y-r*1.6+b);fx.quadraticCurveTo(x+r*.55,y-r*.9+b,x,y-r*.55+b);fx.quadraticCurveTo(x-r*.55,y-r*.9+b,x,y-r*1.6+b);fx.fill()}
+    else if(k==="feed"){fx.fillStyle="#c99a1e";for(var i=0;i<6;i++)fx.fillRect(x-r*.55+(i%3)*r*.4,y-r*1.25+b+Math.floor(i/3)*r*.35+(i%2)*r*.1,r*.22,r*.22)}
+    else{var im=itemImg(k);if(im.complete)fx.drawImage(im,x-r*.8,y-r*1.8+b,r*1.6,r*1.6)}}
+  function drawFV(now){
+    var p=iso(FV.x,FV.y),R=fW*.2,moving=Math.hypot(FV.tx-FV.x,FV.ty-FV.y)>.02,bob=FV.act?0:Math.abs(Math.sin(now/130))*fW*.03*(moving?1:0),sx=1,sy=1;
+    if(FV.hop>0){sx=1.15;sy=.85}
+    fx.fillStyle="rgba(0,0,0,.2)";fx.beginPath();fx.ellipse(p.x,p.y,R*.9,R*.35,0,0,7);fx.fill();
+    fx.save();fx.translate(p.x,p.y-R*sy-bob);fx.scale(sx,sy);
+    fx.fillStyle=vCol();fx.strokeStyle=K;fx.lineWidth=Math.max(1.5,fW*.03);fx.beginPath();fx.arc(0,0,R,0,7);fx.fill();fx.stroke();
+    fx.fillStyle="rgba(255,255,255,.5)";fx.beginPath();fx.ellipse(-R*.35,-R*.5,R*.25,R*.14,-.5,0,7);fx.fill();
+    var lk=FV.face*R*.1;fx.fillStyle=K;fx.beginPath();fx.ellipse(-R*.3+lk,-R*.15,R*.1,R*.2,0,0,7);fx.fill();fx.beginPath();fx.ellipse(R*.3+lk,-R*.15,R*.1,R*.2,0,0,7);fx.fill();
+    fx.lineWidth=Math.max(1.2,fW*.025);fx.lineCap="round";fx.beginPath();fx.arc(lk,R*.15,R*.42,.2*Math.PI,.8*Math.PI);fx.stroke();
+    if(FV.act){var sw=Math.sin(now/90)*.9;fx.save();fx.translate(R*.95,R*.15);fx.rotate(sw);var hl=R*1.5;fx.strokeStyle=K;fx.lineWidth=5;fx.beginPath();fx.moveTo(0,0);fx.lineTo(0,-hl);fx.stroke();fx.strokeStyle="#8b5a2b";fx.lineWidth=3;fx.stroke();
+      fx.fillStyle="#9aa3b5";fx.beginPath();fx.moveTo(-1,-hl);fx.lineTo(hl*.45,-hl-2);fx.lineTo(hl*.4,-hl+hl*.22);fx.closePath();fx.fill();fx.lineWidth=2;fx.strokeStyle=K;fx.stroke();fx.restore()}
+    fx.restore();
+  }
+  function fFrame(t){
+    if(!fRun||where!=="garden"||!fc){fRun=false;return}
+    var dt=Math.min(.05,(t-fLast)/1000||0);fLast=t;var now=Date.now();fUpdateV(dt);
+    var W2=cw(),H2=chh();fx.setTransform(fDPR,0,0,fDPR,0,0);fx.fillStyle="#3f8f46";fx.fillRect(0,0,W2,H2);
+    // which tiles are on screen
+    var cs=[unIso(0,0),unIso(W2,0),unIso(0,H2),unIso(W2,H2)],u0=Math.floor(Math.min.apply(null,cs.map(function(c){return c.u})))-1,u1=Math.ceil(Math.max.apply(null,cs.map(function(c){return c.u})))+3,
+        v0=Math.floor(Math.min.apply(null,cs.map(function(c){return c.v})))-1,v1=Math.ceil(Math.max.apply(null,cs.map(function(c){return c.v})))+3;
+    u0=Math.max(u0,-RING);v0=Math.max(v0,-RING);u1=Math.min(u1,FN+RING);v1=Math.min(v1,FN+RING);
+    var wf=Math.floor(now/700)%2;
+    for(var u=u0;u<u1;u++)for(var v=v0;v<v1;v++){var gtype=groundAt(u,v),p=iso(u,v);
+      var img=groundImg(gtype,gtype==="water"?wf:Math.floor(hash(u,v,7)*3));fx.drawImage(img,p.x-fW/2-1/fDPR,p.y-1/fDPR,img.width/fDPR,img.height/fDPR)}
+    // pond edges + lily pads
+    for(var k in POND){var a=k.split(",").map(Number);if(a[0]<u0||a[0]>u1||a[1]<v0||a[1]>v1)continue;if(hash(a[0],a[1],9)<.18){var lp=iso(a[0]+.5,a[1]+.5);fx.fillStyle="#3aa346";fx.strokeStyle=K;fx.lineWidth=1.5;fx.beginPath();fx.ellipse(lp.x,lp.y,fW*.12,fW*.06,0,.3,6.0);fx.lineTo(lp.x,lp.y);fx.closePath();fx.fill();fx.stroke()}}
+    // edge of your land
+    var B=st.farm.b,e=[iso(B.x0,B.y0),iso(B.x1,B.y0),iso(B.x1,B.y1),iso(B.x0,B.y1)];fx.setLineDash([fW*.15,fW*.12]);fx.strokeStyle="rgba(255,255,255,.7)";fx.lineWidth=2;fx.beginPath();fx.moveTo(e[0].x,e[0].y);for(var i=1;i<4;i++)fx.lineTo(e[i].x,e[i].y);fx.closePath();fx.stroke();fx.setLineDash([]);
+    // highlights: selected for moving, about to be removed
+    function hiTile(x,y,col){var q=[iso(x,y),iso(x+1,y),iso(x+1,y+1),iso(x,y+1)];fx.fillStyle=col;fx.beginPath();fx.moveTo(q[0].x,q[0].y);for(var i=1;i<4;i++)fx.lineTo(q[i].x,q[i].y);fx.closePath();fx.fill()}
+    if(fSel)hiTile(fSel.x,fSel.y,"rgba(255,212,0,.45)");
+    if(fConfirm&&now<fConfirm.until){hiTile(fConfirm.x,fConfirm.y,"rgba(255,40,40,"+(.35+.25*Math.sin(now/120))+")");fx.strokeStyle="#ff3b3b";fx.lineWidth=3;fx.stroke()}
+    // everything standing on the ground, back to front
+    var list=[];
+    for(var u2=u0;u2<u1;u2++)for(var v2=v0;v2<v1;v2++){
+      var wd=wildAt(u2,v2);if(wd)list.push({d:u2+v2+.6,x:u2,y:v2,wild:wd});
+      if(inWorld(u2,v2)){var T=tileAt(u2,v2);if(T&&T.t!=="plow")list.push({d:u2+v2+.7,x:u2,y:v2,T:T})}}
+    BUILD.forEach(function(b){list.push({d:b.x+b.w+b.y+b.d-1.2,b:b})});
+    list.push({d:FV.x+FV.y,v:true});
+    FV.q.forEach(function(q){list.push({d:q.x+q.y+.5,x:q.x,y:q.y,ghost:true})});
+    list.sort(function(p,q){return p.d-q.d});
+    list.forEach(function(it){
+      if(it.v){drawFV(now);return}
+      if(it.b){drawBuilding(it.b);return}
+      var cx2=it.x+.5,cy2=it.y+.5,c=iso(cx2,cy2);
+      if(it.ghost){fx.globalAlpha=.45+.25*Math.sin(now/150);hiTile(it.x,it.y,"#8b5a2b");fx.globalAlpha=1;return}
+      if(it.wild){var sc={oak:.85,pine:.85,bush:.8,rock:.75,flowers:.9,tuft:.9}[it.wild],jx=(hash(it.x,it.y,2)-.5)*fW*.2,jy=(hash(it.x,it.y,3)-.5)*fW*.08;drawSprite(it.wild,cx2,cy2,sc*(.9+hash(it.x,it.y,4)*.25),{dx:jx,dy:jy,flip:hash(it.x,it.y,8)<.5});return}
+      var T=it.T;
+      if(T.t==="crop"){var cs2=cropState(T,now),nm=cs2.withered?"dead":cs2.stage===4?T.c:["seeds","sprout","young","big"][cs2.stage];
+        var bnc=cs2.ready?Math.max(0,Math.sin(now/240+it.x+it.y))*.05:0,r=drawSprite(nm,cx2,cy2+.05,.9,{squash:-bnc});
+        if(cs2.dry||cs2.withered)bubble(c.x,r.y-2,"drop",now);
+        if(cs2.ready&&Math.random()<.03)fParts.push({wx:c.x-camX+(Math.random()-.5)*fW*.4,wy:c.y-camY-fW*.35,vx:0,vy:-20,life:.7,max:.7,ch:"✦",col:"#fff"});
+        if(cs2.grow!==undefined){fx.fillStyle="rgba(0,0,0,.35)";fx.fillRect(c.x-fW*.18,c.y+fW*.12,fW*.36,3);fx.fillStyle="#4fd36b";fx.fillRect(c.x-fW*.18,c.y+fW*.12,fW*.36*cs2.grow,3)}}
+      else if(T.t==="tree"){var D=FTHING[T.k],rd=thingReady(T,now),young=now-T.h<D.time*500,r2=drawSprite(rd?(T.k==="apple"?"appleTree":"orangeTree"):(young?"youngTree":"oak"),cx2,cy2,young&&!rd?.85:.82);if(rd)bubble(c.x,r2.y+r2.h*.1,D.give,now)}
+      else if(T.t==="animal"){var D2=FTHING[T.k],r3=thingReady(T,now),A=ANI[it.x+","+it.y];if(!A)A=ANI[it.x+","+it.y]={ox:0,oy:0,tx:0,ty:0,f:false,w:0};
+        A.w-=dt;if(A.w<=0){A.w=2+Math.random()*3;A.tx=(Math.random()-.5)*.5;A.ty=(Math.random()-.5)*.5}var ddx=A.tx-A.ox,ddy=A.ty-A.oy,dd=Math.hypot(ddx,ddy);if(dd>.01){var spd=.25*dt;A.ox+=ddx/dd*Math.min(spd,dd);A.oy+=ddy/dd*Math.min(spd,dd);A.f=(ddx-ddy)<0}
+        var peck=T.k==="chicken"&&dd<.01&&Math.sin(now/200+it.x)>.7?.06:0,r4=drawSprite(T.k,cx2+A.ox,cy2+A.oy,T.k==="chicken"?1.05:.72,{flip:A.f,squash:peck});
+        var bp=iso(cx2+A.ox,cy2+A.oy);if(r3)bubble(bp.x,r4.y,D2.give,now);else if(!T.f)bubble(bp.x,r4.y,"feed",now)}
+    });
+    // floating bits
+    for(var j=fParts.length-1;j>=0;j--){var P=fParts[j];P.life-=dt;if(P.life<=0){fParts.splice(j,1);continue}P.wx+=P.vx*dt;P.wy+=P.vy*dt;if(P.sq)P.vy+=160*dt;var X=P.wx+camX,Y=P.wy+camY;fx.globalAlpha=Math.min(1,P.life/P.max*1.6);
+      if(P.ch){fx.fillStyle=P.col;fx.font="400 "+Math.round(Math.max(13,fW*(P.big?.26:.22)))+"px 'Lilita One',system-ui,sans-serif";fx.textAlign="center";fx.textBaseline="middle";fx.strokeStyle="rgba(29,18,48,.75)";fx.lineWidth=3;fx.strokeText(P.ch,X,Y);fx.fillText(P.ch,X,Y)}
+      else{fx.fillStyle=P.col;fx.fillRect(X-2,Y-2,4,4)}fx.globalAlpha=1}
+    requestAnimationFrame(fFrame);
+  }
+  function wp(u,v){var p=iso(u,v);return {x:p.x-camX,y:p.y-camY}}
+  function pop(u,v,t,col){var p=wp(u,v);fParts.push({wx:p.x,wy:p.y-fW*.4,vx:0,vy:-34,life:1,max:1,ch:t,col:col,big:1})}
+  function puffAt(u,v,col){var p=wp(u,v);for(var i=0;i<8;i++)fParts.push({wx:p.x,wy:p.y,vx:(Math.random()-.5)*60,vy:-Math.random()*50,life:.6,max:.6,sq:1,col:col})}
+  function splash(u,v){ss("water");var p=wp(u,v);for(var i=0;i<10;i++)fParts.push({wx:p.x+(Math.random()-.5)*fW*.4,wy:p.y-fW*.5,vx:(Math.random()-.5)*10,vy:40+Math.random()*30,life:.45,max:.45,sq:1,col:"#3d9bff"})}
+  function flyOut(item,u,v){var c=iso(u,v),fl=document.createElement("div");fl.className="flyitem";fl.innerHTML=icon(item);fl.style.left=c.x+"px";fl.style.top=(c.y-fW*.6)+"px";stg.appendChild(fl);
+    fl.animate([{transform:"translate(-50%,-50%) scale(.6)"},{transform:"translate(-50%,-150%) scale(1.3)",offset:.35},{transform:"translate(calc(-50% + "+(stg.clientWidth-c.x-30)+"px),"+(-c.y+10)+"px) scale(.5)",opacity:.2}],{duration:900,easing:"ease-in"}).onfinish=function(){fl.remove()}}
+
+  // ================= VERITY ON THE FARM =================
+  function fUpdateV(dt){
+    if(FV.hop>0)FV.hop-=dt;
+    if(FV.act){FV.act.t-=dt;if(FV.act.t<=0){var a=FV.act;FV.act=null;
+        if(!tileAt(a.x,a.y)&&owned(a.x,a.y)&&!wildAt(a.x,a.y)){setTile(a.x,a.y,{t:"plow"});save();addXP(1,a.x+.5,a.y+.5)}}
+      else if(Math.random()<dt*3){ss("thunk");puffAt(FV.act.x+.5,FV.act.y+.5,"#8b5a2b")}return}
+    var dx=FV.tx-FV.x,dy=FV.ty-FV.y,d=Math.hypot(dx,dy);
+    if(d>.02){var sp=(FV.q.length?4:1.6)*dt;if(sp>=d){FV.x=FV.tx;FV.y=FV.ty}else{FV.x+=dx/d*sp;FV.y+=dy/d*sp}if(Math.abs(dx-dy)>.01)FV.face=(dx-dy)>0?1:-1;return}
+    if(FV.q.length){var q=FV.q[0],tx=q.x+.5,ty=q.y+.78;
+      if(Math.hypot(tx-FV.x,ty-FV.y)>.05){FV.tx=tx;FV.ty=ty;return}
+      FV.q.shift();if(tileAt(q.x,q.y)||wildAt(q.x,q.y))return;FV.act={x:q.x,y:q.y,t:.7};FV.hop=.2;return}
+    FV.idle-=dt;if(FV.idle<=0){FV.idle=2+Math.random()*3;var B=st.farm.b,tries=0,nx,ny;do{nx=B.x0+.5+Math.random()*(B.x1-B.x0-1);ny=B.y0+.5+Math.random()*(B.y1-B.y0-1);tries++}while(tries<8&&(wildAt(Math.floor(nx),Math.floor(ny))||tileAt(Math.floor(nx),Math.floor(ny))));
+      FV.tx=Math.max(FV.x-3,Math.min(FV.x+3,nx));FV.ty=Math.max(FV.y-3,Math.min(FV.y+3,ny))}
+  }
+
+  // ================= DOING THINGS =================
   function fDefaultTip(){
-    if(fTool==="hoe")return "Tap or drag across grass. Verity digs each plot.";
+    if(fTool==="hoe")return "Tap or drag across your grass. Verity digs each plot.";
     if(fTool==="can")return "Tap or drag to water. Watering brings wilted crops back too!";
+    if(fTool==="move")return fSel?"Now tap an empty grass spot to move it there.":"Tap a tree or animal to move it.";
+    if(fTool==="remove")return "Tap something to remove it. Clearing wild trees and rocks pays coins!";
     if(FCROP[fTool])return "Tap or drag across dug plots to plant "+fTool+"s.";
-    if(FTHING[fTool])return "Tap an empty grass spot to place the "+FTHING[fTool].name.toLowerCase()+".";
-    return "Tap ready crops, trees and animals to collect. Pick a tool below to farm!";
+    if(FTHING[fTool])return "Tap an empty grass spot on your land to place the "+FTHING[fTool].name.toLowerCase()+".";
+    return "Drag to look around. Tap ready crops, trees and animals to collect!";
+  }
+  function collectable(x,y){var now=Date.now(),T=inWorld(x,y)&&tileAt(x,y);if(!T)return false;
+    if(T.t==="crop")return cropState(T,now).ready;if(T.t==="tree")return thingReady(T,now);if(T.t==="animal")return thingReady(T,now)||!T.f;return false}
+  function fAct(x,y,dragging){
+    var now=Date.now(),T=inWorld(x,y)?tileAt(x,y):null,cx=x+.5,cy=y+.5,wd=wildAt(x,y);
+    if(!inWorld(x,y)){if(!dragging)sTip("That's the forest at the edge of the world.");return}
+    if(buildingAt(x,y)){if(!dragging)sTip(buildingAt(x,y).k==="barn"?"Your barn! Crafting buildings are coming soon.":"The farmhouse. Verity's house is on the House screen.");return}
+    // collecting works with any tool
+    if(T&&T.t==="crop"&&cropState(T,now).ready&&fTool!=="remove"&&!(dragging&&fTool==="can")){harvest(x,y,T);return}
+    if(T&&(T.t==="tree"||T.t==="animal")&&fTool!=="move"&&fTool!=="remove"){var D=FTHING[T.k];
+      if(thingReady(T,now)){fridgeAdd(D.give,D.n);if(T.t==="tree")T.h=now;else T.f=0;save();ss("harvest");flyOut(D.give,cx,cy);addXP(D.xp,cx,cy);sTip("+"+D.n+" "+INAME[D.give].toLowerCase()+(D.n>1?"s":"")+" to the fridge!");return}
+      if(T.t==="animal"&&!T.f){if(dragging)return;if(st.coins<D.feed){hs("buzz");sTip("Feed costs "+D.feed+" coins.",true);return}
+        st.coins-=D.feed;drawCoins();sCoins();T.f=now;save();ss("plant");pop(cx,cy,"-"+D.feed,"#ffd400");sTip("Fed! Come back soon for "+(T.k==="cow"?"milk.":"an egg."));return}
+      if(!dragging&&fTool==="hand")sTip(D.kind==="tree"?"The fruit is still growing.":"Busy making "+(T.k==="cow"?"milk":"an egg")+"!");if(fTool==="hand")return}
+    if(fTool==="hand"){if(dragging)return;
+      if(wd)sTip(WILDV[wd].name+(owned(x,y)?". Use the Remove tool to clear it for coins!":". Buy this land to clear it."));
+      else if(T&&T.t==="crop"){var s3=cropState(T,now);sTip(s3.dry?"It's thirsty! Use the watering can.":s3.withered?"It wilted! Water it to bring it back.":"Still growing!",s3.dry||s3.withered)}
+      else if(!owned(x,y))sTip("This land is for sale. Open the Land tab to buy more!");
+      return}
+    if(fTool==="move"){if(dragging)return;
+      if(!fSel){if(T&&(T.t==="tree"||T.t==="animal")){fSel={x:x,y:y};sfx("pop");sTip("Now tap an empty grass spot on your land.")}else sTip("Only trees and animals can be moved.",true);return}
+      if(fSel.x===x&&fSel.y===y){fSel=null;sTip(fDefaultTip());return}
+      if(!owned(x,y)||T||wd||ROADK[x+","+y]||POND[x+","+y]){hs("buzz");sTip("Pick an empty grass spot on your land.",true);return}
+      var mv=tileAt(fSel.x,fSel.y);setTile(fSel.x,fSel.y,null);setTile(x,y,mv);delete ANI[fSel.x+","+fSel.y];fSel=null;save();hs("furn");puffAt(cx,cy,"#fff");sTip("Moved!");return}
+    if(fTool==="remove"){if(dragging)return;
+      if(!T&&!wd){sTip("Nothing to remove there.");return}
+      if(!owned(x,y)){hs("buzz");sTip("Buy this land first. Then you can clear it.",true);return}
+      if(!fConfirm||fConfirm.x!==x||fConfirm.y!==y||now>fConfirm.until){fConfirm={x:x,y:y,until:now+3000};sfx("boop");sTip("Tap it again to remove it.");return}
+      fConfirm=null;
+      if(wd&&!T){var V=WILDV[wd];st.farm.cleared[x+","+y]=1;if(V.coins){st.coins+=V.coins;drawCoins();sCoins();pop(cx,cy,"+"+V.coins,"#ffd400")}addXP(V.xp,cx,cy);ss("thunk");puffAt(cx,cy,wd==="rock"?"#a7a9b4":"#3aa346");save();sTip(V.name+" cleared!");return}
+      if(T.t==="tree"||T.t==="animal"){var back=Math.floor(FTHING[T.k].price/2);st.coins+=back;drawCoins();sCoins();pop(cx,cy,"+"+back,"#ffd400");delete ANI[x+","+y]}
+      setTile(x,y,null);save();ss("thunk");puffAt(cx,cy,"#8b5a2b");sTip("Removed.");return}
+    if(!owned(x,y)){if(!dragging){hs("buzz");sTip("That land isn't yours yet. Buy more in the Land tab!",true)}return}
+    if(wd){if(!dragging){hs("buzz");sTip("Clear the "+WILDV[wd].name.toLowerCase()+" first with the Remove tool.",true)}return}
+    if(ROADK[x+","+y]||POND[x+","+y])return;
+    if(fTool==="hoe"){if(!T){if(FV.q.some(function(q){return q.x===x&&q.y===y}))return;FV.q.push({x:x,y:y})}
+      else if(T.t==="crop"&&cropState(T,now).withered&&!dragging){setTile(x,y,{t:"plow"});save();ss("thunk")}return}
+    if(fTool==="can"){if(T&&T.t==="crop"){var s=cropState(T,now);
+        if(s.dry){T.w=now;splash(cx,cy);save();return}
+        if(s.withered){T.w=now-FCROP[T.c].time*1000;splash(cx,cy);save();if(!dragging)sTip("Saved it! The "+T.c+" is ready to pick again.");return}}
+      if(!dragging&&!(T&&T.t==="crop"))sTip("Water plants with a blue drop over them.");return}
+    if(FCROP[fTool]){if(!T||T.t!=="plow"){if(!dragging)sTip(T?"Something is already there.":"Dig it first with the hoe!",!T);return}
+      var C=FCROP[fTool];if(st.coins<C.price){hs("buzz");sTip(fTool+" seeds cost "+C.price+" coins. Earn more at Work!",true);fGest=null;return}
+      st.coins-=C.price;drawCoins();sCoins();setTile(x,y,{t:"crop",c:fTool,w:0});save();ss("plant");pop(cx,cy,"-"+C.price,"#ffd400");addXP(1);return}
+    if(FTHING[fTool]){if(dragging)return;if(T){sTip("Pick an empty grass spot.",true);return}
+      var D2=FTHING[fTool];if(st.coins<D2.price){hs("buzz");sTip("A "+D2.name.toLowerCase()+" costs "+D2.price+" coins.",true);return}
+      st.coins-=D2.price;drawCoins();sCoins();setTile(x,y,D2.kind==="tree"?{t:"tree",k:fTool,h:now}:{t:"animal",k:fTool,f:0});save();hs("furn");puffAt(cx,cy,"#fff");addXP(5,cx,cy);
+      sTip(D2.kind==="tree"?"Planted! Fruit grows back again and again.":"Tap it to feed it, then collect what it makes!");fTray();return}
+  }
+  function harvest(x,y,T){
+    var C=FCROP[T.c],m=st.farm.mast[T.c]=(st.farm.mast[T.c]||0)+1,stars=MAST.filter(function(v){return m>=v}).length;
+    var n=1+(stars>=3||(stars===2&&Math.random()<.5)||(stars===1&&Math.random()<.25)?1:0);
+    fridgeAdd(T.c,n);setTile(x,y,{t:"plow"});save();ss("harvest");flyOut(T.c,x+.5,y+.5);if(n>1)pop(x+.5,y+.2,"x2!","#ffd400");addXP(C.xp,x+.5,y+.5);
+    if(MAST.indexOf(m)>=0){sfx("tune");sTip("New star for "+T.c+"s! Stars give bonus harvests.");fTray()}
   }
 
-  // ---- tray ----
-  var TICON={hand:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M8 13V5.5a1.5 1.5 0 0 1 3 0V11"/><path d="M11 10.5V4a1.5 1.5 0 0 1 3 0v6.5"/><path d="M14 10.5V5.5a1.5 1.5 0 0 1 3 0V12"/><path d="M17 9.5a1.5 1.5 0 0 1 3 0V15a7 7 0 0 1-7 7h-1.2a7 7 0 0 1-5.3-2.4L3.6 16a1.6 1.6 0 0 1 2.3-2.2L8 15.5"/></svg>'};
-  function sprImg(k,cls){return '<img class="'+(cls||"si")+'" alt="" src="'+sprURL(k)+'">'}
-  var SPURL={};function sprURL(k){if(!SPURL[k]){var s=SPR[k],c=document.createElement("canvas"),z=Math.max(1,Math.floor(48/Math.max(s.width,s.height)));c.width=s.width*z;c.height=s.height*z;var g=c.getContext("2d");g.imageSmoothingEnabled=false;g.drawImage(s,0,0,c.width,c.height);SPURL[k]=c.toDataURL()}return SPURL[k]}
+  // ================= TOUCH: drag to look around, pinch to zoom, tools to farm =================
+  var ptrs={},fGest=null;
+  function ptOf(ev){var r=fc.getBoundingClientRect();return {x:ev.clientX-r.left,y:ev.clientY-r.top}}
+  function tileOf(p){var w=unIso(p.x,p.y);return {x:Math.floor(w.u),y:Math.floor(w.v)}}
+  function fDown(ev){
+    ev.preventDefault();try{fc.setPointerCapture(ev.pointerId)}catch(e){}
+    var p=ptOf(ev);ptrs[ev.pointerId]=p;var ids=Object.keys(ptrs);
+    if(ids.length===2){var a=ptrs[ids[0]],b=ptrs[ids[1]];fGest={mode:"pinch",d:Math.hypot(a.x-b.x,a.y-b.y),m:{x:(a.x+b.x)/2,y:(a.y+b.y)/2},w:fW};return}
+    if(ids.length>2)return;
+    var t=tileOf(p),act=fTool!=="hand"||collectable(t.x,t.y);
+    fGest={mode:act?"act":"pan",start:p,last:p,tile:t.x+","+t.y,moved:0};
+    if(act)fAct(t.x,t.y,false);
+  }
+  function fMove(ev){
+    if(!ptrs[ev.pointerId])return;var p=ptOf(ev);ptrs[ev.pointerId]=p;if(!fGest)return;
+    if(fGest.mode==="pinch"){var ids=Object.keys(ptrs);if(ids.length<2)return;var a=ptrs[ids[0]],b=ptrs[ids[1]],d=Math.hypot(a.x-b.x,a.y-b.y),m={x:(a.x+b.x)/2,y:(a.y+b.y)/2};
+      camX+=m.x-fGest.m.x;camY+=m.y-fGest.m.y;fGest.m=m;zoomTo(fGest.w*d/fGest.d,m.x,m.y);clampCam();return}
+    fGest.moved+=Math.hypot(p.x-fGest.last.x,p.y-fGest.last.y);
+    if(fGest.mode==="pan"){camX+=p.x-fGest.last.x;camY+=p.y-fGest.last.y;clampCam();fGest.last=p;return}
+    fGest.last=p;var t=tileOf(p),k=t.x+","+t.y;if(k===fGest.tile)return;fGest.tile=k;
+    if(fTool==="hand"){if(collectable(t.x,t.y))fAct(t.x,t.y,true);return}
+    fAct(t.x,t.y,true);
+  }
+  function fUp(ev){
+    var g=fGest;delete ptrs[ev.pointerId];
+    if(g&&g.mode==="pan"&&g.moved<8){var t=tileOf(g.start);fAct(t.x,t.y,false)}
+    if(Object.keys(ptrs).length===0)fGest=null;else if(g&&g.mode==="pinch"){var id=Object.keys(ptrs)[0];fGest={mode:"pan",start:ptrs[id],last:ptrs[id],moved:99}}
+  }
+  function fWheel(ev){ev.preventDefault();var p=ptOf(ev);zoomTo(fW*(ev.deltaY<0?1.12:1/1.12),p.x,p.y)}
+
+  // ================= TRAY =================
+  var TI={
+    hand:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M8 13V5.5a1.5 1.5 0 0 1 3 0V11"/><path d="M11 10.5V4a1.5 1.5 0 0 1 3 0v6.5"/><path d="M14 10.5V5.5a1.5 1.5 0 0 1 3 0V12"/><path d="M17 9.5a1.5 1.5 0 0 1 3 0V15a7 7 0 0 1-7 7h-1.2a7 7 0 0 1-5.3-2.4L3.6 16a1.6 1.6 0 0 1 2.3-2.2L8 15.5"/></svg>',
+    hoe:'<svg viewBox="0 0 24 24" fill="none" stroke-linecap="round" stroke-linejoin="round"><path d="M7 21 17 5" stroke="#1d1230" stroke-width="4.5"/><path d="M7 21 17 5" stroke="#b07a3f" stroke-width="2.4"/><path d="M14 3h7l-1 5-5-1Z" fill="#9aa3b5" stroke="#1d1230" stroke-width="1.8"/></svg>',
+    can:'<svg viewBox="0 0 24 24" stroke-linejoin="round"><path d="M4 9h11v11H4Z" fill="#3d9bff" stroke="#1d1230" stroke-width="1.8"/><path d="M15 12l6-5 1.5 1.5-6 6.5" fill="#3d9bff" stroke="#1d1230" stroke-width="1.8"/><path d="M6 9q0-5 4-5t4 5" fill="none" stroke="#1d1230" stroke-width="1.8"/><circle cx="22" cy="6" r="1" fill="#9fd3ff"/></svg>',
+    move:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2v20M2 12h20M12 2l-3 3M12 2l3 3M12 22l-3-3M12 22l3-3M2 12l3-3M2 12l3 3M22 12l-3-3M22 12l-3 3"/></svg>',
+    remove:'<svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><path d="M6 21 16 7" stroke="#1d1230" stroke-width="4.5"/><path d="M6 21 16 7" stroke="#b07a3f" stroke-width="2.4"/><path d="M13 4q6-2 8 4l-4 1-3-3Z" fill="#c8ccd6" stroke="#1d1230" stroke-width="1.8"/></svg>'
+  };
+  var ARTURL={};function aurl(n){if(!ARTURL[n])ARTURL[n]=artURL(n);return ARTURL[n]}
   function fTray(){
     var lv=st.farm.lv,h='<div class="ftabs">'+[["tools","Tools"],["seeds","Seeds"],["things","Trees & animals"],["land","Land"]].map(function(t){return '<button class="ftab" type="button" data-tab="'+t[0]+'" aria-selected="'+(fTab===t[0])+'">'+t[1]+'</button>'}).join("")+'</div><div class="gtray">';
-    if(fTab==="tools")h+=[["hand","Pick",TICON.hand],["hoe","Dig",sprImg("hoe")],["can","Water",sprImg("can")]].map(function(t){return '<button class="gtool" type="button" data-f="'+t[0]+'" aria-pressed="'+(fTool===t[0])+'">'+t[2]+'<span>'+t[1]+'</span></button>'}).join("");
+    if(fTab==="tools")h+=[["hand","Look"],["hoe","Dig"],["can","Water"],["move","Move"],["remove","Remove"]].map(function(t){return '<button class="gtool" type="button" data-f="'+t[0]+'" aria-pressed="'+(fTool===t[0])+'">'+TI[t[0]]+'<span>'+t[1]+'</span></button>'}).join("");
     if(fTab==="seeds")h+=FORD.map(function(k){var C=FCROP[k],lock=lv<C.lv,m=st.farm.mast[k]||0,stars=MAST.filter(function(x){return m>=x}).length;
-      return '<button class="gtool seed'+(lock?' locked':'')+(st.coins<C.price?' poor':'')+'" type="button" data-f="'+k+'" aria-pressed="'+(fTool===k)+'" aria-label="'+k+' seeds"'+(lock?' disabled':'')+'>'+sprImg(k)+(lock?'<span>Level '+C.lv+'</span>':'<span class="pr">'+COINI+C.price+'</span><span class="tm">'+(C.time/60)+' min</span><span class="stars">'+'★'.repeat(stars)+'<i>'+'★'.repeat(3-stars)+'</i></span>')+'</button>'}).join("");
+      return '<button class="gtool seed'+(lock?' locked':'')+(st.coins<C.price?' poor':'')+'" type="button" data-f="'+k+'" aria-pressed="'+(fTool===k)+'" aria-label="'+k+' seeds"'+(lock?' disabled':'')+'><img class="si" alt="" src="'+aurl(k)+'">'+(lock?'<span>Level '+C.lv+'</span>':'<span class="pr">'+COINI+C.price+'</span><span class="tm">'+(C.time/60)+' min</span><span class="stars">'+'★'.repeat(stars)+'<i>'+'★'.repeat(3-stars)+'</i></span>')+'</button>'}).join("");
     if(fTab==="things")h+=TORD.map(function(k){var D=FTHING[k],lock=lv<D.lv;
-      return '<button class="gtool seed'+(lock?' locked':'')+(st.coins<D.price?' poor':'')+'" type="button" data-f="'+k+'" aria-pressed="'+(fTool===k)+'" aria-label="'+D.name+'"'+(lock?' disabled':'')+'>'+sprImg(D.kind==="tree"?(k==="apple"?"appleTree":"orangeTree"):k)+(lock?'<span>Level '+D.lv+'</span>':'<span class="pr">'+COINI+D.price+'</span><span class="tm">'+D.name+'</span>')+'</button>'}).join("");
-    if(fTab==="land"){var i=LAND.findIndex(function(l){return l.size>st.farm.size});
-      if(i<0)h+='<p class="fland">Your farm is as big as it gets!</p>';
-      else{var L=LAND[i];h+='<button class="gtool landbtn'+(lv<L.lv||st.coins<L.price?' poor':'')+'" type="button" data-land="'+i+'"><b>'+L.size+'×'+L.size+'</b><span>'+(lv<L.lv?'Level '+L.lv:'')+'</span><span class="pr">'+COINI+L.price+'</span></button><p class="fland">Bigger farm: more room for crops, trees and animals.</p>'}}
+      return '<button class="gtool seed'+(lock?' locked':'')+(st.coins<D.price?' poor':'')+'" type="button" data-f="'+k+'" aria-pressed="'+(fTool===k)+'" aria-label="'+D.name+'"'+(lock?' disabled':'')+'><img class="si" alt="" src="'+aurl(D.kind==="tree"?(k==="apple"?"appleTree":"orangeTree"):k)+'">'+(lock?'<span>Level '+D.lv+'</span>':'<span class="pr">'+COINI+D.price+'</span><span class="tm">'+D.name+'</span>')+'</button>'}).join("");
+    if(fTab==="land"){var E=EXP[st.farm.exp],B=st.farm.b;
+      if(!E)h+='<p class="fland">You own all the land there is!</p>';
+      else{var dirs=[["n","↖","x0",B.x0>BMIN],["e","↗","y0",B.y0>BMIN],["s","↘","x1",B.x1<BMAX],["w","↙","y1",B.y1<BMAX]];
+        h+=dirs.map(function(d){var ok=d[3];return '<button class="gtool landbtn'+(!ok||lv<E.lv||st.coins<E.price?' poor':'')+'" type="button" data-land="'+d[2]+'"'+(ok?'':' disabled')+' aria-label="Buy land '+d[0]+'"><b>'+d[1]+'</b><span>'+(ok?(lv<E.lv?'Level '+E.lv:'+4 rows'):'Edge')+'</span><span class="pr">'+COINI+E.price+'</span></button>'}).join("")+'<p class="fland">Pick a way to grow. Clear wild trees and rocks on new land for coins.</p>'}}
     stray.innerHTML=h+'</div>';
   }
   stray.addEventListener("click",function(ev){
     if(where!=="garden")return;
-    var t=ev.target.closest(".ftab");if(t){fTab=t.dataset.tab;sfx("pop");fTray();return}
-    var lb=ev.target.closest("[data-land]");if(lb){var L=LAND[+lb.dataset.land];
-      if(st.farm.lv<L.lv){hs("buzz");sTip("Reach farm level "+L.lv+" to buy more land!",true);return}
-      if(st.coins<L.price){hs("buzz");sTip("More land costs "+L.price+" coins. Earn more at Work!",true);return}
-      st.coins-=L.price;st.farm.size=L.size;save();drawCoins();sCoins();chaching();addXP(10);fTray();fLayout();sTip("Your farm grew! Now it's "+L.size+"×"+L.size+".");
-      for(var i=0;i<30;i++){var p=iso(Math.random()*L.size,Math.random()*L.size);fParts.push({x:p.x,y:p.y,vx:(Math.random()-.5)*40,vy:-60-Math.random()*40,life:1,max:1,ch:"✦",col:"#ffd400"})}return}
+    var t=ev.target.closest(".ftab");if(t){fTab=t.dataset.tab;sfx("pop");fTray();if(fTab==="land")sTip(EXP[st.farm.exp]?"Pick an arrow to grow your farm that way. Clear wild trees and rocks on new land for coins.":"You own all the land there is!");return}
+    var lb=ev.target.closest("[data-land]");if(lb){if(lb.disabled)return;var E=EXP[st.farm.exp],side=lb.dataset.land,B=st.farm.b;
+      if(st.farm.lv<E.lv){hs("buzz");sTip("Reach farm level "+E.lv+" to buy more land!",true);return}
+      if(st.coins<E.price){hs("buzz");sTip("More land costs "+E.price+" coins. Earn more at Work!",true);return}
+      st.coins-=E.price;st.farm.exp++;
+      if(side==="x0")B.x0=Math.max(BMIN,B.x0-STRIP);if(side==="x1")B.x1=Math.min(BMAX,B.x1+STRIP);if(side==="y0")B.y0=Math.max(BMIN,B.y0-STRIP);if(side==="y1")B.y1=Math.min(BMAX,B.y1+STRIP);
+      save();drawCoins();sCoins();chaching();addXP(10);fTray();GT={};sTip("More land! Clear the wild trees and rocks on it for coins.");
+      for(var i=0;i<30;i++){var p=wp(B.x0+Math.random()*(B.x1-B.x0),B.y0+Math.random()*(B.y1-B.y0));fParts.push({wx:p.x,wy:p.y,vx:(Math.random()-.5)*40,vy:-60-Math.random()*40,life:1,max:1,ch:"✦",col:"#ffd400"})}return}
     var b=ev.target.closest(".gtool");if(!b||b.disabled||!b.dataset.f)return;
-    fTool=fTool===b.dataset.f&&b.dataset.f!=="hand"?"hand":b.dataset.f;sfx("pop");fTray();sTip(fDefaultTip());
+    fTool=fTool===b.dataset.f&&b.dataset.f!=="hand"?"hand":b.dataset.f;fSel=null;fConfirm=null;sfx("pop");fTray();sTip(fDefaultTip());
   });
 
-  // ---- level, XP, orders bar ----
+  // ================= LEVEL + XP =================
   function fBar(){var F=st.farm,lo=XPL[F.lv-1]||0,hi=XPL[F.lv];var el=document.getElementById("flv");if(!el)return;
     el.textContent="Lv "+F.lv;document.getElementById("fxp").style.width=(hi?Math.min(100,(F.xp-lo)/(hi-lo)*100):100)+"%";document.getElementById("fxpt").textContent=hi?(F.xp-lo)+" / "+(hi-lo)+" XP":"Max level";
     var n=st.farm.orders.filter(canDeliver).length,b=document.getElementById("fordn");b.hidden=!n;b.textContent=n}
-  function unlocksAt(l){var u=[];FORD.forEach(function(k){if(FCROP[k].lv===l)u.push(k)});TORD.forEach(function(k){if(FTHING[k].lv===l)u.push(FTHING[k].name.toLowerCase())});LAND.forEach(function(L){if(L.lv===l&&L.price)u.push("bigger land")});return u}
-  function addXP(n,at){
+  function unlocksAt(l){var u=[];FORD.forEach(function(k){if(FCROP[k].lv===l)u.push(k)});TORD.forEach(function(k){if(FTHING[k].lv===l)u.push(FTHING[k].name.toLowerCase())});EXP.forEach(function(E,i){if(E.lv===l&&(i===0||EXP[i-1].lv!==l))u.push("more land")});return u}
+  function addXP(n,u,v){
     var F=st.farm;F.xp+=n;
-    if(at&&where==="garden")fParts.push({x:at.x+10,y:at.y-14,vx:0,vy:-30,life:1,max:1,ch:"+"+n+" XP",col:"#7fd3ff",big:1});
-    while(XPL[F.lv]&&F.xp>=XPL[F.lv]){F.lv++;var u=unlocksAt(F.lv);
-      (function(lv,u){setTimeout(function(){sfx("tune");var host=where==="garden"?stg:document.querySelector(".stage");
-        var b=document.createElement("div");b.className="lvup farmlv";b.innerHTML='<b>FARM LEVEL '+lv+'!</b><span>'+(u.length?"New: "+u.join(", "):"Keep farming!")+'</span>';host.appendChild(b);
+    if(u!==undefined&&where==="garden"&&fc){var p=wp(u,v);fParts.push({wx:p.x+10,wy:p.y-fW*.5,vx:0,vy:-30,life:1,max:1,ch:"+"+n+" XP",col:"#7fd3ff",big:1})}
+    while(XPL[F.lv]&&F.xp>=XPL[F.lv]){F.lv++;var ul=unlocksAt(F.lv);
+      (function(lv,ul){setTimeout(function(){sfx("tune");var host=where==="garden"?stg:document.querySelector(".stage");
+        var b=document.createElement("div");b.className="lvup farmlv";b.innerHTML='<b>FARM LEVEL '+lv+'!</b><span>'+(ul.length?"New: "+ul.join(", "):"Keep farming!")+'</span>';host.appendChild(b);
         for(var i=0;i<26;i++){var c=document.createElement("i");c.className="conf";c.style.left=(Math.random()*100)+"%";c.style.background=["#ffd400","#ff5fa2","#4fd36b","#3d9bff","#fff"][i%5];c.style.animationDelay=(Math.random()*.4)+"s";b.appendChild(c)}
-        setTimeout(function(){b.remove()},3000);if(where==="garden")fTray()},400)})(F.lv,u)}
+        setTimeout(function(){b.remove()},3000);if(where==="garden")fTray()},400)})(F.lv,ul)}
     save();fBar();
   }
-  window.farmXP=addXP;
+  window.farmXP=function(n){addXP(n)};
+  window.__farmArt=function(n,sc){return sprite(n,sc).c.toDataURL()};
   window.__farmPt=function(u,v){var p=iso(u,v),r=fc.getBoundingClientRect();return {x:r.left+p.x,y:r.top+p.y}};
 
-  // ---- orders board ----
+  // ================= ORDERS =================
   function unlockedItems(){var lv=st.farm.lv,it=FORD.filter(function(k){return FCROP[k].lv<=lv});TORD.forEach(function(k){if(FTHING[k].lv<=lv)it.push(FTHING[k].give)});return it}
-  function newOrder(){var it=unlockedItems().sort(function(){return Math.random()-.5}),n=Math.min(it.length,1+Math.floor(Math.random()*Math.min(3,1+Math.floor(st.farm.lv/2)))),need={},val=0;
+  function newOrder(){var used={};(st.farm.orders||[]).forEach(function(o){Object.keys(o.need).forEach(function(k){used[k]=1})});var it=unlockedItems().map(function(k){return [k,Math.random()+(used[k]?1:0)]}).sort(function(a,b){return a[1]-b[1]}).map(function(x){return x[0]}),n=Math.min(it.length,1+Math.floor(Math.random()*Math.min(3,1+Math.floor(st.farm.lv/2)))),need={},val=0;
     for(var i=0;i<n;i++){var q=1+Math.floor(Math.random()*(st.farm.lv>=3?4:3));need[it[i]]=q;val+=q*VAL[it[i]]}
     var who=["Grandma Plum","Farmer Fig","Chef Bean","Mayor Moo","Little Pip","Captain Corn"][Math.floor(Math.random()*6)];
     return {who:who,need:need,coins:Math.round(val*1.8/5)*5,xp:8+n*6}}
@@ -2492,138 +2831,25 @@ body.playmode .verity{touch-action:none}
     });
   }
 
-  // ---- doing things on tiles ----
-  function fAct(x,y,dragging){
-    var now=Date.now(),T=tileAt(x,y),c=iso(x+.5,y+.5);
-    if(!owned(x,y)){if(!dragging){hs("buzz");sTip("That land isn't yours yet. Buy more in the Land tab!",true)}return}
-    // collecting works with any tool
-    if(T&&T.t==="crop"){var cs=cropState(T,now);
-      if(cs.ready&&(fTool==="hand"||!dragging||fTool!=="can")){harvest(x,y,T);return}}
-    if(T&&(T.t==="tree"||T.t==="animal")){var D=FTHING[T.k];
-      if(thingReady(T,now)){var n=D.n;fridgeAdd(D.give,n);if(T.t==="tree")T.h=now;else T.f=0;save();ss("harvest");flyOut(D.give,c);addXP(D.xp,c);sTip("+"+n+" "+INAME[D.give].toLowerCase()+(n>1?"s":"")+" to the fridge!");return}
-      if(T.t==="animal"&&!T.f){if(dragging)return;if(st.coins<D.feed){hs("buzz");sTip("Feed costs "+D.feed+" coins.",true);return}
-        st.coins-=D.feed;drawCoins();sCoins();T.f=now;save();ss("plant");pop(c,"-"+D.feed,"#ffd400");sTip("Fed! Come back soon for "+(T.k==="cow"?"milk.":"an egg."));return}
-      if(!dragging)sTip(D.kind==="tree"?"The fruit is still growing.":"Busy making "+(T.k==="cow"?"milk":"an egg")+"!");return}
-    if(fTool==="hoe"){if(!T){if(FV.q.some(function(q){return q.x===x&&q.y===y}))return;FV.q.push({x:x,y:y});ghostDig(x,y)}else if(T.t==="crop"&&cropState(T,now).withered&&!dragging){setTile(x,y,{t:"plow"});save();ss("thunk");puffAt(c,"#9a7a4a")}return}
-    if(fTool==="can"){if(T&&T.t==="crop"){var s=cropState(T,now);
-        if(s.dry){T.w=now;splash(c);save();return}
-        if(s.withered){T.w=now-FCROP[T.c].time*1000;splash(c);save();if(!dragging)sTip("Saved it! The "+T.c+" is ready to pick again.");return}}
-      if(!dragging&&!(T&&T.t==="crop"))sTip("Water plants that have a blue drop over them.");return}
-    if(FCROP[fTool]){if(!T||T.t!=="plow"){if(!dragging)sTip(T?"Something is already there.":"Dig it first with the hoe!",!T);return}
-      var C=FCROP[fTool];if(st.coins<C.price){hs("buzz");sTip(fTool+" seeds cost "+C.price+" coins. Earn more at Work!",true);fUpHard();return}
-      st.coins-=C.price;drawCoins();sCoins();setTile(x,y,{t:"crop",c:fTool,w:0});save();ss("plant");pop(c,"-"+C.price,"#ffd400");addXP(1);return}
-    if(FTHING[fTool]){if(dragging)return;if(T){sTip("Pick an empty grass spot.",true);return}
-      var D2=FTHING[fTool];if(st.coins<D2.price){hs("buzz");sTip("A "+D2.name.toLowerCase()+" costs "+D2.price+" coins.",true);return}
-      if(Math.floor(FV.x)===x&&Math.floor(FV.y)===y){FV.x+=1;FV.tx=FV.x}
-      st.coins-=D2.price;drawCoins();sCoins();setTile(x,y,D2.kind==="tree"?{t:"tree",k:fTool,h:now}:{t:"animal",k:fTool,f:0});save();hs("furn");puffAt(c,"#fff");addXP(5,c);
-      sTip(D2.kind==="tree"?"Planted! Fruit grows back again and again.":"Tap it to feed it, then collect what it makes!");fTray();return}
-    if(!dragging&&T&&T.t==="crop"){var s3=cropState(T,now);sTip(s3.dry?"It's thirsty! Use the watering can.":s3.withered?"It wilted! Water it to bring it back.":"Still growing!",s3.dry||s3.withered)}
-    else if(!dragging&&!T)sTip("Pick the hoe to dig this grass.");
+  // ================= OPEN THE FARM =================
+  function fBuild(){
+    stg.className="sstage farm";
+    stg.innerHTML='<canvas id="fc" aria-label="Farm"></canvas><div class="fbar"><div class="flv"><b id="flv">Lv 1</b><div class="fxp"><i id="fxp"></i></div><span id="fxpt"></span></div><button class="ford" id="ford" type="button">Orders<i id="fordn" hidden></i></button></div>'+
+      '<div class="fzoom"><button type="button" id="fzin" aria-label="Zoom in">+</button><button type="button" id="fzout" aria-label="Zoom out">−</button><button type="button" id="fhome" aria-label="Back to my farm"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 11 12 4l9 7"/><path d="M5 10v10h14V10"/></svg></button></div>';
+    fc=document.getElementById("fc");fx=fc.getContext("2d");
+    fTool="hand";fTab="tools";fSel=null;fConfirm=null;fLayout(false);fTray();fBar();
+    var B=st.farm.b;if(!owned(Math.floor(FV.x),Math.floor(FV.y))){FV.x=FV.tx=(B.x0+B.x1)/2;FV.y=FV.ty=(B.y0+B.y1)/2}
+    if(!fRun){fRun=true;fLast=performance.now();requestAnimationFrame(fFrame)}
+    sTip(fDefaultTip());fOrdersFill();
+    document.getElementById("ford").addEventListener("click",fOrders);
+    document.getElementById("fzin").addEventListener("click",function(){zoomTo(fW*1.25,cw()/2,chh()/2);sfx("pop")});
+    document.getElementById("fzout").addEventListener("click",function(){zoomTo(fW/1.25,cw()/2,chh()/2);sfx("pop")});
+    document.getElementById("fhome").addEventListener("click",function(){fLayout(false);sfx("pop")});
+    fc.addEventListener("pointerdown",fDown);fc.addEventListener("pointermove",fMove);fc.addEventListener("pointerup",fUp);fc.addEventListener("pointercancel",fUp);fc.addEventListener("wheel",fWheel,{passive:false});
   }
-  function harvest(x,y,T){
-    var c=iso(x+.5,y+.5),C=FCROP[T.c],m=st.farm.mast[T.c]=(st.farm.mast[T.c]||0)+1,stars=MAST.filter(function(v){return m>=v}).length;
-    var n=1+(stars>=3||(stars===2&&Math.random()<.5)||(stars===1&&Math.random()<.25)?1:0);
-    fridgeAdd(T.c,n);setTile(x,y,{t:"plow"});save();ss("harvest");flyOut(T.c,c);if(n>1)pop({x:c.x,y:c.y-30},"x2!","#ffd400");addXP(C.xp,c);
-    if(MAST.indexOf(m)>=0){sfx("tune");sTip("New star for "+T.c+"s! Stars give bonus harvests.");fTray()}
-  }
-  function fUpHard(){fDrag=null}
-  // little effects
-  function pop(c,t,col){fParts.push({x:c.x,y:c.y-20,vx:0,vy:-34,life:1,max:1,ch:t,col:col,big:1})}
-  function puffAt(c,col){for(var i=0;i<8;i++)fParts.push({x:c.x,y:c.y,vx:(Math.random()-.5)*60,vy:-Math.random()*50,life:.6,max:.6,sq:1,col:col})}
-  function splash(c){ss("water");for(var i=0;i<10;i++)fParts.push({x:c.x+(Math.random()-.5)*fW*.4,y:c.y-fW*.5,vx:(Math.random()-.5)*10,vy:40+Math.random()*30,life:.45,max:.45,sq:1,col:"#3d9bff"});fParts.push({spr:"can",x:c.x+fW*.18,y:c.y-fW*.55,vx:0,vy:0,life:.5,max:.5})}
-  function ghostDig(x,y){}
-  function flyOut(item,c){var fl=document.createElement("div");fl.className="flyitem";fl.innerHTML=icon(item);fl.style.left=c.x+"px";fl.style.top=(c.y-fW*.6)+"px";stg.appendChild(fl);
-    fl.animate([{transform:"translate(-50%,-50%) scale(.6)"},{transform:"translate(-50%,-150%) scale(1.3)",offset:.35},{transform:"translate(calc(-50% + "+(stg.clientWidth-c.x-30)+"px),"+(-c.y+10)+"px) scale(.5)",opacity:.2}],{duration:900,easing:"ease-in"}).onfinish=function(){fl.remove()}}
-
-  // ---- touch: tap or drag across tiles ----
-  var fDrag=null;
-  function fPt(ev){var r=fc.getBoundingClientRect();return {px:ev.clientX-r.left,py:ev.clientY-r.top}}
-  function fDown(ev){ev.preventDefault();try{fc.setPointerCapture(ev.pointerId)}catch(e){}var p=fPt(ev),t=toTile(p.px,p.py);fDrag={last:t.x+","+t.y};if(t.x>=0&&t.y>=0&&t.x<FN&&t.y<FN)fAct(t.x,t.y,false)}
-  function fMove(ev){var p=fPt(ev),t=toTile(p.px,p.py);fHover=(t.x>=0&&t.y>=0&&t.x<FN&&t.y<FN)?t:null;if(!fDrag)return;var k=t.x+","+t.y;if(k===fDrag.last)return;fDrag.last=k;if(fHover)fAct(t.x,t.y,true)}
-  function fUp(){fDrag=null}
-
-  // ---- Verity on the farm ----
-  function fUpdateV(dt){
-    if(FV.hop>0)FV.hop-=dt;
-    if(FV.act){FV.act.t-=dt;if(FV.act.t<=0){var a=FV.act;FV.act=null;
-        if(!tileAt(a.x,a.y)&&owned(a.x,a.y)){setTile(a.x,a.y,{t:"plow"});save();addXP(1,iso(a.x+.5,a.y+.5))}}
-      else if(Math.random()<dt*3){ss("thunk");puffAt(iso(FV.act.x+.5,FV.act.y+.5),"#8b5a2b")}return}
-    var dx=FV.tx-FV.x,dy=FV.ty-FV.y,d=Math.hypot(dx,dy);
-    if(d>.02){var sp=(FV.q.length?4:1.6)*dt;if(sp>=d){FV.x=FV.tx;FV.y=FV.ty}else{FV.x+=dx/d*sp;FV.y+=dy/d*sp}if(Math.abs(dx-dy)>.01)FV.face=(dx-dy)>0?1:-1;return}
-    if(FV.q.length){var q=FV.q[0];var tx=q.x+.5,ty=q.y+.72;
-      if(Math.hypot(tx-FV.x,ty-FV.y)>.05){FV.tx=tx;FV.ty=ty;return}
-      FV.q.shift();if(tileAt(q.x,q.y)){return}FV.act={x:q.x,y:q.y,t:.7};FV.hop=.2;return}
-    FV.idle-=dt;if(FV.idle<=0){FV.idle=2+Math.random()*3;var S=st.farm.size;FV.tx=.3+Math.random()*(S-.6);FV.ty=.3+Math.random()*(S-.6)}
-  }
-  function drawFV(g,now){
-    var p=iso(FV.x,FV.y),R=fW*.2,bob=FV.act?0:Math.abs(Math.sin(now/130))*fW*.03*(Math.hypot(FV.tx-FV.x,FV.ty-FV.y)>.02?1:0),sx=1,sy=1;
-    if(FV.hop>0){sx=1.15;sy=.85}
-    g.fillStyle="rgba(0,0,0,.2)";g.beginPath();g.ellipse(p.x,p.y,R*.9,R*.35,0,0,7);g.fill();
-    g.save();g.translate(p.x,p.y-R*sy-bob);g.scale(sx,sy);
-    g.fillStyle=vCol();g.strokeStyle="#1d1230";g.lineWidth=Math.max(1.2,fW*.025);g.beginPath();g.arc(0,0,R,0,7);g.fill();g.stroke();
-    g.fillStyle="rgba(255,255,255,.5)";g.beginPath();g.ellipse(-R*.35,-R*.5,R*.25,R*.14,-.5,0,7);g.fill();
-    var lk=FV.face*R*.1;g.fillStyle="#1d1230";g.beginPath();g.ellipse(-R*.3+lk,-R*.15,R*.1,R*.2,0,0,7);g.fill();g.beginPath();g.ellipse(R*.3+lk,-R*.15,R*.1,R*.2,0,0,7);g.fill();
-    g.strokeStyle="#1d1230";g.lineWidth=Math.max(1,fW*.02);g.lineCap="round";g.beginPath();g.arc(lk,R*.15,R*.42,.2*Math.PI,.8*Math.PI);g.stroke();
-    if(FV.act){var sw=Math.sin(now/90)*.8;g.save();g.translate(R*.9,R*.1);g.rotate(sw);var hw=fW*.22;g.imageSmoothingEnabled=false;g.drawImage(SPR.hoe,-hw*.3,-hw*1.2,hw*.7,hw);g.restore()}
-    g.restore();
-  }
-
-  // ---- drawing ----
-  var fLast=0;
-  function blockFace(g,tex,o,ax,ay,shade){g.save();g.transform(ax.x,ax.y,ay.x,ay.y,o.x,o.y);g.imageSmoothingEnabled=false;g.drawImage(tex,0,0,16,16,0,0,1,1);if(shade){g.fillStyle=shade;g.fillRect(0,0,1,1)}g.restore()}
-  function drawSpr(g,s,x,y,scale,bounce){var p=fW*scale/16,w=s.width*p,h=s.height*p;if(bounce){h*=1+bounce;w*=1-bounce*.5}g.imageSmoothingEnabled=false;g.drawImage(s,x-w/2,y-h,w,h)}
-  function bubble(g,x,y,k,now){var b=Math.sin(now/250)*fW*.04,r=fW*.17;g.fillStyle="#fff3c4";g.strokeStyle="#1d1230";g.lineWidth=2;g.beginPath();g.arc(x,y-r+b,r,0,7);g.fill();g.stroke();
-    g.beginPath();g.moveTo(x-r*.3,y-r*.15+b);g.lineTo(x,y+r*.35+b);g.lineTo(x+r*.3,y-r*.15+b);g.fill();
-    if(k==="drop"){g.fillStyle="#3d9bff";g.beginPath();g.moveTo(x,y-r*1.6+b);g.quadraticCurveTo(x+r*.55,y-r*.9+b,x,y-r*.55+b);g.quadraticCurveTo(x-r*.55,y-r*.9+b,x,y-r*1.6+b);g.fill()}
-    else if(k==="feed"){g.fillStyle="#c99a1e";for(var i=0;i<6;i++)g.fillRect(x-r*.55+(i%3)*r*.4,y-r*1.25+b+Math.floor(i/3)*r*.35+(i%2)*r*.1,r*.22,r*.22)}
-    else{var im=SPRITEOF[k];if(im){g.imageSmoothingEnabled=false;var s=r*1.4;g.drawImage(im,x-s/2,y-r-s/2+b,s,s)}}}
-  var SPRITEOF={egg:mk(12,12,function(p){p(3,0,6,12,"#8a6a40");p(2,2,8,9,"#8a6a40");p(1,4,10,6,"#8a6a40");p(4,1,4,10,"#fffaf0");p(3,3,6,7,"#fffaf0");p(2,5,8,4,"#fffaf0");p(4,3,1,3,"#fff")}),milk:mk(12,12,function(p){p(4,0,4,2,"#fff");p(3,2,6,10,"#fff");p(3,6,6,3,"#3d9bff")}),apple:mk(12,12,function(p){p(2,3,8,8,"#e0281b");p(3,2,6,10,"#e0281b");p(4,4,2,2,"#ff8a7a");p(6,0,1,3,"#8a5a2b");p(7,1,2,1,G1)}),orange:mk(12,12,function(p){p(2,3,8,8,"#ff8a1f");p(3,2,6,10,"#ff8a1f");p(4,4,2,2,"#ffb066");p(6,1,1,2,G1)})};
-  function fFrame(t){
-    if(!fRun||where!=="garden"||!fc){fRun=false;return}
-    var dt=Math.min(.05,(t-fLast)/1000||0);fLast=t;var now=Date.now(),g=fg;fUpdateV(dt);
-    var W=fc.width/fDPR,H=fc.height/fDPR;g.setTransform(fDPR,0,0,fDPR,0,0);
-    var sky=g.createLinearGradient(0,0,0,H);sky.addColorStop(0,"#8fd0ff");sky.addColorStop(1,"#c9ecff");g.fillStyle=sky;g.fillRect(0,0,W,H);
-    g.fillStyle="rgba(255,255,255,.8)";[[.15,.12,1],[.7,.08,1.3]].forEach(function(cl){var x=cl[0]*W,y=cl[1]*H,k=cl[2]*fW;g.beginPath();g.arc(x,y,k*.5,0,7);g.arc(x+k*.5,y-k*.2,k*.6,0,7);g.arc(x+k,y,k*.45,0,7);g.fill()});
-    var ax={x:fW/2,y:fH/2},ay={x:-fW/2,y:fH/2},down={x:0,y:fD};
-    for(var u=0;u<FN;u++)for(var v=0;v<FN;v++){
-      var T=tileAt(u,v),o=iso(u,v),tex=TX[(hash(u,v,7)<.25)?"grass2":"grass"];
-      if(T&&(T.t==="plow"||T.t==="crop"))tex=(T.t==="crop"&&T.w&&!cropState(T,now).withered)?TX.wet:TX.plow;
-      blockFace(g,tex,o,ax,ay,owned(u,v)?null:"rgba(20,30,20,.32)");
-      if(u===FN-1)blockFace(g,TX.side,iso(u+1,v),ay,down,"rgba(0,0,0,.18)");
-      if(v===FN-1)blockFace(g,TX.side,iso(u,v+1),ax,down,"rgba(0,0,0,.32)");
-    }
-    // edge of your land
-    var S=st.farm.size;g.strokeStyle="rgba(255,255,255,.75)";g.lineWidth=2;g.setLineDash([6,5]);g.beginPath();var a=iso(0,0),b=iso(S,0),c2=iso(S,S),d=iso(0,S);g.moveTo(a.x,a.y);g.lineTo(b.x,b.y);g.lineTo(c2.x,c2.y);g.lineTo(d.x,d.y);g.closePath();g.stroke();g.setLineDash([]);
-    if(fHover&&fTool!=="hand"){var h=fHover,q=[iso(h.x,h.y),iso(h.x+1,h.y),iso(h.x+1,h.y+1),iso(h.x,h.y+1)];g.strokeStyle=owned(h.x,h.y)?"#fff":"#ff8a7a";g.lineWidth=2.5;g.beginPath();g.moveTo(q[0].x,q[0].y);for(var i=1;i<4;i++)g.lineTo(q[i].x,q[i].y);g.closePath();g.stroke()}
-    // things, back to front, with Verity in the right place
-    var list=[];
-    Object.keys(st.farm.tiles).forEach(function(k){var xy=k.split(",").map(Number);list.push({d:xy[0]+xy[1]+1,x:xy[0],y:xy[1],T:st.farm.tiles[k]})});
-    list.push({d:FV.x+FV.y,v:true});
-    FV.q.forEach(function(q){list.push({d:q.x+q.y+1,x:q.x,y:q.y,ghost:true})});
-    list.sort(function(p,q){return p.d-q.d});
-    list.forEach(function(it){
-      if(it.v){drawFV(g,now);return}
-      var c=iso(it.x+.5,it.y+.5);
-      if(it.ghost){g.globalAlpha=.5+.3*Math.sin(now/150);g.fillStyle="#8b5a2b";var q=[iso(it.x+.2,it.y+.2),iso(it.x+.8,it.y+.2),iso(it.x+.8,it.y+.8),iso(it.x+.2,it.y+.8)];g.beginPath();g.moveTo(q[0].x,q[0].y);for(var i=1;i<4;i++)g.lineTo(q[i].x,q[i].y);g.closePath();g.fill();g.globalAlpha=1;return}
-      var T=it.T;
-      if(T.t==="crop"){var cs=cropState(T,now),sp=cs.withered?SPR.dead:cs.stage===4?SPR[T.c]:SPR["s"+cs.stage],sc=cs.stage===4?.68:.58;
-        var bnc=cs.ready?Math.max(0,Math.sin(now/220+it.x))*.06:0;drawSpr(g,sp,c.x,c.y+fH*.15,sc,bnc);
-        if(cs.dry)bubble(g,c.x,c.y-fW*.45,"drop",now);
-        if(cs.withered)bubble(g,c.x,c.y-fW*.45,"drop",now);
-        if(cs.ready&&Math.random()<.04)fParts.push({x:c.x+(Math.random()-.5)*fW*.4,y:c.y-fW*.35,vx:0,vy:-20,life:.7,max:.7,ch:"✦",col:"#fff"});
-        if(cs.grow!==undefined){g.fillStyle="rgba(0,0,0,.35)";g.fillRect(c.x-fW*.18,c.y+fH*.2,fW*.36,3);g.fillStyle="#4fd36b";g.fillRect(c.x-fW*.18,c.y+fH*.2,fW*.36*cs.grow,3)}}
-      else if(T.t==="tree"){var D=FTHING[T.k],r=thingReady(T,now);drawSpr(g,r?(T.k==="apple"?SPR.appleTree:SPR.orangeTree):SPR.tree,c.x,c.y+fH*.2,.95);if(r)bubble(g,c.x,c.y-fW*1.35,D.give,now)}
-      else if(T.t==="animal"){var D2=FTHING[T.k],r2=thingReady(T,now),wob=T.f&&!r2?Math.sin(now/300+it.x*2)*.03:0;drawSpr(g,SPR[T.k],c.x+Math.sin(now/900+it.y)*fW*.05,c.y+fH*.1,T.k==="cow"?.82:.6,wob);
-        if(r2)bubble(g,c.x,c.y-fW*(T.k==="cow"?.75:.55),D2.give,now);else if(!T.f)bubble(g,c.x,c.y-fW*(T.k==="cow"?.75:.55),"feed",now)}
-    });
-    // particles
-    for(var j=fParts.length-1;j>=0;j--){var P=fParts[j];P.life-=dt;if(P.life<=0){fParts.splice(j,1);continue}P.x+=P.vx*dt;P.y+=P.vy*dt;if(P.sq)P.vy+=160*dt;g.globalAlpha=Math.min(1,P.life/P.max*1.6);
-      if(P.spr){g.imageSmoothingEnabled=false;var s=fW*.35;g.save();g.translate(P.x,P.y);g.rotate(.5);g.drawImage(SPR[P.spr],-s/2,-s/2,s,s*.85);g.restore()}
-      else if(P.ch){g.fillStyle=P.col;g.font="400 "+Math.round(fW*(P.big?.26:.22))+"px 'Lilita One',system-ui,sans-serif";g.textAlign="center";g.textBaseline="middle";g.strokeStyle="rgba(29,18,48,.7)";g.lineWidth=3;g.strokeText(P.ch,P.x,P.y);g.fillText(P.ch,P.x,P.y)}
-      else{g.fillStyle=P.col;g.fillRect(P.x-2,P.y-2,4,4)}g.globalAlpha=1}
-    requestAnimationFrame(fFrame);
-  }
+  window.addEventListener("resize",function(){if(where==="garden"&&fc)fLayout(true)});
   setInterval(function(){if(where==="garden")fBar()},2000);
+
 
   document.getElementById("toGarden").addEventListener("click",function(){sfx("pop");openScene("garden")});
   document.getElementById("toKitchen").addEventListener("click",function(){
@@ -2832,5 +3058,4 @@ body.playmode .verity{touch-action:none}
   if(st.coins>0)hint.hidden=true;
 })();
 </script>
-
 </body></html>
