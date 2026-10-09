@@ -166,8 +166,8 @@ body.housemode .score,body.housemode .play{display:none}
 .hcoins .c{width:.85em;height:.85em}
 .htip{font-size:1rem;color:var(--text);opacity:.85;text-align:right;line-height:1.2}
 .htip.warn{color:var(--coin);opacity:1}
-.hwrap{flex:1;min-height:0;width:100%;display:flex;align-items:center;justify-content:center}
-#hc{touch-action:none;border-radius:10px;box-shadow:0 6px 0 rgba(0,0,0,.25);display:block}
+.hwrap{flex:1;min-height:0;width:100%;position:relative}
+#hc{touch-action:none;border-radius:10px;box-shadow:0 6px 0 rgba(0,0,0,.25);display:block;position:absolute;left:50%;top:50%;transform:translate(-50%,-50%)}
 .htray{width:100%;max-width:900px;background:var(--sheet);border-radius:18px;padding:8px;box-sizing:border-box;display:flex;flex-direction:column;gap:8px}
 .htools{display:flex;gap:6px}
 .htool{width:48px;height:44px;border-radius:12px;border:0;background:var(--row);color:var(--text);display:flex;align-items:center;justify-content:center;cursor:pointer;flex:none}
@@ -1148,7 +1148,10 @@ body.playmode .verity{touch-action:none}
   function speckle(x,y,s,c,r,cols){for(var i=0;i<6;i++){x2=x+hash(c,r,i)*s*.8;var y2=y+hash(c,r,i+9)*s*.8;cx.fillStyle=cols[i%cols.length];cx.fillRect(x2,y2,s*.16,s*.16)}}
   var cx,x2;
   function drawBlock(g,ch,x,y,s,c,r){
-    cx=g;var u=s/8;
+    cx=g;g.save();g.beginPath();g.rect(x,y,s,s);g.clip();drawBlockInner(g,ch,x,y,s,c,r);g.restore();
+  }
+  function drawBlockInner(g,ch,x,y,s,c,r){
+    var u=s/8;
     switch(ch){
       case "m":g.fillStyle="#8b5a2b";g.fillRect(x,y,s,s);g.fillStyle="#5dbb63";g.fillRect(x,y,s,s*.32);g.fillStyle="#46a04c";for(var i=0;i<4;i++)g.fillRect(x+i*2*u+(hash(c,r,i)*u),y+s*.3,u,u*(1+hash(c,r,i+3)*1.5));speckle(x,y+s*.4,s*.6,c,r,["#6e4420","#a8703a"]);break;
       case "p":case "c":var base=ch==="p"?"#b07a3f":"#4b8fd6",dark=ch==="p"?"#8a5a2b":"#2f6ab0",lite=ch==="p"?"#c99055":"#6aa9ea";
@@ -1360,6 +1363,7 @@ body.playmode .verity{touch-action:none}
     else hRun=false;
   }
   window.addEventListener("resize",function(){if(!houseEl.hidden)hlayout()});
+  if(window.ResizeObserver)new ResizeObserver(function(){if(!houseEl.hidden)hlayout()}).observe(hwrap);
 
   // ---- touch: build, dig, or move Verity ----
   var hdown=null,hover=null;
