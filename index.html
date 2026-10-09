@@ -129,6 +129,29 @@ button{font:inherit;color:inherit}
 .sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)}
 /* ---- play mode: idle life, expressions, reactions ---- */
 .xo{display:none}
+body .verity svg[data-x="talk"] .face-base,body .verity svg[data-x="listen"] .face-base{display:inline}
+.verity svg[data-x="talk"] .mouthg,.verity svg[data-x="listen"] .mouthg{display:none}
+.verity svg[data-x="talk"] .x-talk,.verity svg[data-x="listen"] .x-listen{display:inline}
+.r-listen{animation:listen .7s ease-in-out infinite alternate}
+@keyframes listen{from{transform:rotate(-5deg) scale(1.03,.98)}to{transform:rotate(-2deg) translateY(-4px) scale(1.01,1.02)}}
+.talkbar{position:absolute;left:0;right:0;bottom:10px;display:flex;align-items:center;justify-content:center;gap:12px;flex-wrap:wrap;z-index:1}
+body.playmode .hint{bottom:86px}
+.ear{width:62px;height:62px;border-radius:50%;border:0;cursor:pointer;display:flex;align-items:center;justify-content:center;background:rgba(0,0,0,.3);color:var(--text);flex:none}
+.ear svg{width:34px;height:34px}
+.ear[aria-pressed="true"]{background:var(--coin);color:var(--ink);box-shadow:0 4px 0 #b88a00}
+.ear.rec{animation:recpulse .6s ease-in-out infinite alternate}
+@keyframes recpulse{to{box-shadow:0 0 0 8px rgba(255,212,0,.35),0 4px 0 #b88a00}}
+.voices{display:flex;gap:6px;background:rgba(0,0,0,.28);padding:5px;border-radius:999px}
+.voice{width:44px;height:44px;border-radius:50%;border:0;cursor:pointer;display:flex;align-items:center;justify-content:center;background:none;color:var(--text)}
+.voice svg{width:26px;height:26px}
+.voice[aria-pressed="true"]{background:var(--text);color:var(--ink)}
+.ear:focus-visible,.voice:focus-visible{outline:3px solid var(--text);outline-offset:2px}
+.card{background:var(--sheet);border-radius:24px;padding:24px 20px;max-width:340px;width:100%;display:flex;flex-direction:column;align-items:center;gap:14px;box-sizing:border-box}
+.card h2{margin:0;font-weight:400;font-size:1.9rem;line-height:1.1}
+.card p{margin:0;color:var(--muted);font-size:1.1rem;line-height:1.35}
+.card .big{font-size:1.4rem;padding:14px 28px;border:0;border-radius:999px;background:var(--coin);color:var(--ink);box-shadow:0 5px 0 #b88a00;cursor:pointer;animation:none}
+.card .msg{color:var(--coin);font-size:1rem}
+.card .later{background:none;border:0;color:var(--muted);font-size:1rem;cursor:pointer;box-shadow:none;padding:4px;animation:none}
 .verity svg[data-x] .face-base{display:none}
 .verity svg[data-x="happy"] .x-happy{display:inline}
 .verity svg[data-x="surprised"] .x-surprised{display:inline}
@@ -203,6 +226,10 @@ body.playmode .verity{touch-action:none}
     <div class="shadow" id="shadow"></div>
     <button class="verity" id="verity" type="button" aria-label="Tap"></button>
     <div class="hint" id="hint">Tap Verity!</div>
+    <div class="talkbar" id="talkbar" hidden>
+      <button class="ear" id="ear" type="button" aria-pressed="false" aria-label="Turn on ears"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9a6 6 0 0 1 12 0c0 3.2-2.2 4.3-3.2 5.6-1 1.3-.6 3.4-2.8 4.6-1.6.9-3.6.2-4.2-1.4"/><path d="M9.5 9a2.5 2.5 0 0 1 5 0c0 1.6-1.6 2-1.6 3.4"/></svg></button>
+      <div class="voices" role="group" aria-label="Voice"><button class="voice" type="button" data-v="squeaky" aria-label="Squeaky voice" aria-pressed="false"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="7" cy="7" r="3.5"/><circle cx="17" cy="7" r="3.5"/><circle cx="12" cy="14" r="6.5"/><circle cx="10" cy="13" r="1" fill="currentColor"/><circle cx="14" cy="13" r="1" fill="currentColor"/></svg></button><button class="voice" type="button" data-v="deep" aria-label="Deep spooky voice" aria-pressed="false"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 21V11a7 7 0 0 1 14 0v10l-2.3-2-2.3 2-2.4-2-2.3 2-2.4-2Z"/><circle cx="9.5" cy="11" r="1.2" fill="currentColor"/><circle cx="14.5" cy="11" r="1.2" fill="currentColor"/></svg></button><button class="voice" type="button" data-v="robot" aria-label="Robot voice" aria-pressed="false"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="7" width="16" height="13" rx="3"/><path d="M12 7V3.5"/><circle cx="12" cy="3" r="1" fill="currentColor"/><rect x="8" y="11" width="2.5" height="2.5" fill="currentColor"/><rect x="13.5" y="11" width="2.5" height="2.5" fill="currentColor"/><path d="M9 16.5h6"/></svg></button><button class="voice" type="button" data-v="echo" aria-label="Echo voice" aria-pressed="false"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="5" cy="12" r="2" fill="currentColor"/><path d="M9.5 8a6 6 0 0 1 0 8M13.5 5a10 10 0 0 1 0 14M17.5 2.5a13.5 13.5 0 0 1 0 19"/></svg></button><button class="voice" type="button" data-v="backwards" aria-label="Backwards voice" aria-pressed="false"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 5 4 10l5 5"/><path d="M4 10h10a6 6 0 0 1 0 12h-3"/></svg></button></div>
+    </div>
   </div>
 </div>
 
@@ -221,6 +248,17 @@ body.playmode .verity{touch-action:none}
   <div class="list" id="list"></div>
   <button class="pill close" id="closeShop" type="button">Back to the game</button>
   <button class="reset-link" id="reset" type="button">Start over (erase coins and items)</button>
+</div>
+
+<div class="start" id="earsCard" hidden>
+  <div class="card">
+    <div id="earsFace" style="width:120px;height:120px"></div>
+    <h2 id="earsTitle">Let Verity hear you!</h2>
+    <p>Talk to her and she'll copy you in a funny voice.</p>
+    <button class="big" id="earsYes" type="button">Turn on ears</button>
+    <p class="msg" id="earsMsg" hidden></p>
+    <button class="later" id="earsNo" type="button">Not now</button>
+  </div>
 </div>
 
 <div class="start" id="start">
@@ -295,11 +333,13 @@ body.playmode .verity{touch-action:none}
     yawn:CLOSED+'<ellipse cx="100" cy="134" rx="20" ry="26" fill="'+INK+'"/><ellipse cx="100" cy="148" rx="11" ry="7" fill="#ff6f8a"/>',
     dizzy:'<path d="M60 68 L84 92 M84 68 L60 92 M116 68 L140 92 M140 68 L116 92"'+SW(8)+'/><path d="M62 134 Q81 120 100 134 Q119 148 138 134"'+SW(8)+'/>',
     wince:'<path d="M60 68 L84 80 L60 92 M140 68 L116 80 L140 92"'+SW(8)+'/><path d="M74 136 Q87 128 100 136 Q113 144 126 136"'+SW(7)+'/>',
+    listen:'<ellipse cx="100" cy="136" rx="9" ry="10" fill="'+INK+'"/>',
+    talk:'<ellipse class="tm" cx="100" cy="134" rx="22" ry="5" fill="'+INK+'"/>',
     blep:EYES+'<path d="M66 128 Q100 142 134 128"'+SW(8)+'/><path d="M86 134 Q100 168 114 134Z" fill="#ff6f8a" stroke="'+INK+'" stroke-width="4" stroke-linejoin="round"/>'
   };
   function faceSVG(f){
     var x='';for(var k in XFACES)x+='<g class="xo x-'+k+'">'+XFACES[k]+'</g>';
-    return (f.deco||'')+'<g class="face-base"><g class="look"><g class="blink">'+f.eyes+'</g></g>'+f.mouth+'</g>'+x;
+    return (f.deco||'')+'<g class="face-base"><g class="look"><g class="blink">'+f.eyes+'</g></g><g class="mouthg">'+f.mouth+'</g></g>'+x;
   }
 
   // ---------- hair (lift = how far a hat moves up to sit on top) ----------
@@ -508,6 +548,7 @@ body.playmode .verity{touch-action:none}
     if(expr)svgEl().setAttribute("data-x",expr);
     if(mode==="play"){hint.textContent="Poke, tickle or pet "+m.name+"!";perLabel.textContent="Play mode: no coins here"}
     else{hint.textContent="Tap "+m.name+"!";perLabel.textContent="+"+m.per+" coin"+(m.per>1?"s":"")+" per tap"}
+    if(ears)drawEars();
   }
   function drawCoins(){num.textContent=st.coins.toLocaleString()}
 
@@ -668,7 +709,7 @@ body.playmode .verity{touch-action:none}
 
   // ---- getting bored, falling asleep, waking up ----
   var lastAct=Date.now(),sleeping=false,lastBored=0,tick=0;
-  function paused(){return !sheet.hidden||!ed.hidden||!startEl.hidden}
+  function paused(){return !sheet.hidden||!ed.hidden||!startEl.hidden||!earsCard.hidden}
   function wake(){var was=sleeping;lastAct=Date.now();if(sleeping){sleeping=false;setX(null);react("startle")}return was}
   setInterval(function(){
     var now=Date.now();tick++;
@@ -688,7 +729,7 @@ body.playmode .verity{touch-action:none}
   var modeBtns=document.querySelectorAll(".mode");
   function setGameMode(m){mode=m;document.body.classList.toggle("playmode",m==="play");
     modeBtns.forEach(function(b){b.setAttribute("aria-pressed",b.dataset.mode===m)});
-    hint.hidden=m==="tap"&&st.coins>0;drawMain();wake()}
+    hint.hidden=m==="tap"&&st.coins>0;talkbar.hidden=m!=="play";if(m!=="play")earsOff();drawMain();drawEars();wake()}
   modeBtns.forEach(function(b){b.addEventListener("click",function(){if(mode!==b.dataset.mode){setGameMode(b.dataset.mode);sfx("pop")}})});
 
   // ---- sound on/off ----
@@ -703,6 +744,120 @@ body.playmode .verity{touch-action:none}
   document.getElementById("startBtn").addEventListener("click",function(){
     tone(function(c){if(c.resume)c.resume()});startEl.hidden=true;lastAct=Date.now();react("startle");
   });
+
+
+  // ================= TALK-BACK (Copycat) =================
+  var talkbar=document.getElementById("talkbar"),earBtn=document.getElementById("ear"),
+      earsCard=document.getElementById("earsCard"),earsMsg=document.getElementById("earsMsg");
+  var ears={on:false,stream:null,src:null,proc:null,sink:null,state:"idle",floor:.01,pre:[],preLen:0,chunks:[],len:0,silence:0,rec:0,raf:0};
+  if(!st.voice)st.voice="squeaky";
+  function getCtx(){ctx=ctx||new (window.AudioContext||window.webkitAudioContext)();if(ctx.state==="suspended"&&ctx.resume)ctx.resume();return ctx}
+  function drawEars(){
+    earBtn.setAttribute("aria-pressed",ears.on);earBtn.setAttribute("aria-label",ears.on?"Turn off ears":"Turn on ears");
+    earBtn.classList.toggle("rec",ears.state==="rec");
+    document.querySelectorAll(".voice").forEach(function(b){b.setAttribute("aria-pressed",b.dataset.v===st.voice)});
+    if(mode==="play")hint.textContent=ears.on?"Talk to "+cur().name+"!":"Poke, tickle or pet "+cur().name+"!";
+  }
+  function showEarsCard(){
+    earsMsg.hidden=true;document.getElementById("earsYes").hidden=false;
+    document.getElementById("earsFace").innerHTML=ballSVG(cur(),"ec",st.hair,st.hat,"-30 -90 260 300",st.mask);
+    document.getElementById("earsTitle").textContent="Let "+cur().name+" hear you!";
+    earsCard.hidden=false;
+  }
+  function earsFail(err){
+    var framed=false;try{framed=window.self!==window.top}catch(e){framed=true}
+    earsMsg.textContent=framed||!navigator.mediaDevices
+      ?"The microphone can't be used on this preview page. Talk-back works on your home-screen version: felang01.github.io/tap-the-verity"
+      :(err&&err.name==="NotFoundError"?"No microphone found on this device."
+      :"The microphone is blocked. Allow it for this site in Safari's settings, then try again.");
+    earsMsg.hidden=false;document.getElementById("earsYes").hidden=true;
+  }
+  function earsOn(){
+    if(!navigator.mediaDevices||!navigator.mediaDevices.getUserMedia){earsFail();return}
+    var c=getCtx();
+    navigator.mediaDevices.getUserMedia({audio:{echoCancellation:true,noiseSuppression:true,autoGainControl:true}}).then(function(stream){
+      if(st.muted){st.muted=false;save();drawMute()}
+      ears.stream=stream;ears.src=c.createMediaStreamSource(stream);
+      ears.proc=c.createScriptProcessor(2048,1,1);ears.sink=c.createGain();ears.sink.gain.value=0;
+      ears.src.connect(ears.proc);ears.proc.connect(ears.sink);ears.sink.connect(c.destination);
+      ears.proc.onaudioprocess=onAudio;
+      ears.on=true;ears.state="idle";ears.pre=[];ears.preLen=0;ears.floor=.01;
+      earsCard.hidden=true;drawEars();wake();sfx("pop");
+    }).catch(earsFail);
+  }
+  function earsOff(){
+    if(ears.state==="rec")setListening(false);
+    ears.on=false;ears.state="idle";
+    try{ears.proc&&(ears.proc.onaudioprocess=null,ears.proc.disconnect());ears.src&&ears.src.disconnect()}catch(e){}
+    if(ears.stream)ears.stream.getTracks().forEach(function(t){t.stop()});
+    ears.stream=ears.src=ears.proc=null;drawEars();
+  }
+  function setListening(on){
+    var e=svgEl();if(!e)return;
+    if(on){setX("listen");ANIMS.forEach(function(a){e.classList.remove(a)});e.classList.add("r-listen")}
+    else{e.classList.remove("r-listen");if(expr==="listen")setX(null)}
+  }
+  function onAudio(ev){
+    if(!ears.on)return;
+    var d=ev.inputBuffer.getChannelData(0),copy=new Float32Array(d),sr=ctx.sampleRate,blk=d.length/sr,sum=0;
+    for(var i=0;i<copy.length;i++)sum+=copy[i]*copy[i];
+    var rms=Math.sqrt(sum/copy.length);
+    if(ears.state==="playing"||ears.state==="cool"||mode!=="play"||paused()||petting)return;
+    var thr=Math.max(.02,ears.floor*3.2);
+    if(ears.state==="idle"){
+      ears.pre.push(copy);ears.preLen+=copy.length;
+      while(ears.preLen>sr*.3){ears.preLen-=ears.pre.shift().length}
+      if(rms>thr){
+        if(wake()){ears.pre=[];ears.preLen=0;return}   // her first sound just wakes her up
+        ears.state="rec";ears.chunks=ears.pre.slice();ears.len=ears.preLen;ears.silence=0;ears.rec=0;
+        setListening(true);drawEars();
+      } else ears.floor=ears.floor*.97+rms*.03;
+    } else if(ears.state==="rec"){
+      ears.chunks.push(copy);ears.len+=copy.length;ears.rec+=blk;lastAct=Date.now();
+      ears.silence=rms<thr*.8?ears.silence+blk:0;
+      if(ears.silence>=.8||ears.len/sr>=8)finishClip();
+    }
+  }
+  function finishClip(){
+    var sr=ctx.sampleRate;setListening(false);
+    var keep=ears.len-Math.max(0,Math.round((ears.silence-.15)*sr));
+    if(ears.rec-ears.silence<.3){ears.state="idle";ears.pre=[];ears.preLen=0;drawEars();return}   // too short: a cough or a bump
+    var buf=ctx.createBuffer(1,keep,sr),out=buf.getChannelData(0),o=0;
+    for(var i=0;i<ears.chunks.length&&o<keep;i++){var ch=ears.chunks[i],n=Math.min(ch.length,keep-o);out.set(ch.subarray(0,n),o);o+=n}
+    ears.chunks=[];ears.state="playing";drawEars();playClip(buf);
+  }
+  var VOICE={squeaky:{rate:1.55},deep:{rate:.72,gain:1.3},robot:{rate:1.08},echo:{rate:1.18,tail:.8},backwards:{rate:1.25}};
+  function playClip(buf){
+    var c=getCtx(),V=VOICE[st.voice]||VOICE.squeaky,data=buf.getChannelData(0),peak=0,i;
+    for(i=0;i<data.length;i++)if(Math.abs(data[i])>peak)peak=Math.abs(data[i]);
+    if(st.voice==="backwards")Array.prototype.reverse.call(data);
+    var src=c.createBufferSource(),out=c.createGain(),an=c.createAnalyser(),extra=null;
+    src.buffer=buf;src.playbackRate.value=V.rate;
+    out.gain.value=Math.min(5,.85/Math.max(peak,.01))*(V.gain||1);an.fftSize=512;
+    out.connect(an);an.connect(c.destination);
+    if(st.voice==="robot"){var rg=c.createGain();rg.gain.value=0;extra=c.createOscillator();extra.frequency.value=55;extra.connect(rg.gain);src.connect(rg);rg.connect(out);extra.start()}
+    else if(st.voice==="echo"){src.connect(out);var dl=c.createDelay(1),fb=c.createGain();dl.delayTime.value=.22;fb.gain.value=.45;src.connect(dl);dl.connect(fb);fb.connect(dl);dl.connect(out)}
+    else src.connect(out);
+    setX("talk");var e=svgEl(),arr=new Float32Array(an.fftSize);
+    (function loop(){an.getFloatTimeDomainData(arr);var s2=0;for(var k=0;k<arr.length;k++)s2+=arr[k]*arr[k];
+      var l=Math.min(1,Math.sqrt(s2/arr.length)*5),sv=svgEl();
+      if(sv){var m=sv.querySelector(".x-talk .tm");if(m){m.setAttribute("ry",(4+l*24).toFixed(1));m.setAttribute("cy",(134+l*8).toFixed(1))}
+        sv.style.transform="scale("+(1+l*.05).toFixed(3)+","+(1-l*.04).toFixed(3)+")"}
+      ears.raf=requestAnimationFrame(loop)})();
+    src.onended=function(){setTimeout(function(){
+      cancelAnimationFrame(ears.raf);var sv=svgEl();if(sv)sv.style.transform="";
+      if(extra)try{extra.stop()}catch(e){}
+      if(expr==="talk")setX(null);
+      ears.state="cool";drawEars();
+      setTimeout(function(){ears.state="idle";ears.pre=[];ears.preLen=0;drawEars()},450);
+    },(V.tail||0)*1000)};
+    src.start();
+  }
+  earBtn.addEventListener("click",function(){if(ears.on)earsOff();else showEarsCard()});
+  document.getElementById("earsYes").addEventListener("click",earsOn);
+  document.getElementById("earsNo").addEventListener("click",function(){earsCard.hidden=true});
+  document.querySelectorAll(".voice").forEach(function(b){b.addEventListener("click",function(){st.voice=b.dataset.v;save();drawEars();sfx("pop")})});
+  drawEars();
 
   // ---------- shop ----------
   var sheet=document.getElementById("sheet"),scrim=document.getElementById("scrim"),
