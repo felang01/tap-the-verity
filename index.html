@@ -184,6 +184,61 @@ body.housemode .score,body.housemode .play{display:none}
 .hitem.poor{opacity:.45}
 .htool:focus-visible,.htab:focus-visible,.hitem:focus-visible{outline:3px solid var(--text);outline-offset:2px}
 .mode{padding:6px 12px}
+.jobs{display:flex;gap:6px;justify-content:center;margin-top:10px}
+.job{border:0;border-radius:999px;padding:7px 18px;font:inherit;font-size:1.05rem;background:rgba(0,0,0,.28);color:var(--text);cursor:pointer}
+.job[aria-pressed="true"]{background:var(--coin);color:var(--ink);box-shadow:0 3px 0 #b88a00}
+.job:focus-visible{outline:3px solid var(--text);outline-offset:2px}
+.energy{display:flex;align-items:center;justify-content:center;gap:8px;margin-top:10px;font-size:.95rem}
+.ebar{width:min(220px,55vw);height:14px;border-radius:999px;background:rgba(0,0,0,.3);overflow:hidden;border:2px solid rgba(255,255,255,.25)}
+.ebar i{display:block;height:100%;background:#4fd36b;border-radius:999px;transition:width .3s}
+.ebar i.low{background:#ff8a1f}
+body.playmode .jobs,body.playmode .energy,body.mathjob .energy,body.mathjob #perLabel{display:none}
+body.mathjob .play{display:none}
+body:not(.mathjob) .mathp{display:none}
+.mathp{flex:1;min-height:0;width:100%;max-width:620px;display:flex;flex-direction:column;gap:10px;padding-block:10px 14px;position:relative;overflow-y:auto}
+.mathp>*{flex-shrink:0}
+.msecs{display:grid;grid-template-columns:repeat(4,1fr);gap:6px}
+.msec{border:0;border-radius:14px;padding:8px 4px;background:rgba(0,0,0,.28);color:var(--text);font:inherit;font-size:.95rem;cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:2px;line-height:1.05}
+.msec b{font-weight:400;font-size:1.6rem}
+.msec[aria-pressed="true"]{background:var(--text);color:var(--ink)}
+.mlevels{display:flex;gap:6px;overflow-x:auto;padding-bottom:2px}
+.mlv{flex:1 0 auto;min-width:92px;border:0;border-radius:12px;padding:6px 8px;background:var(--row);color:var(--text);font:inherit;cursor:pointer;display:flex;flex-direction:column;align-items:flex-start;gap:1px;text-align:left}
+.mlv b{font-weight:400;font-size:.95rem}.mlv span{font-size:.8rem;color:var(--muted)}
+.mlv .pr{display:flex;align-items:center;gap:3px;color:var(--coin);font-size:.85rem}.mlv .pr .c{width:.9em;height:.9em}
+.mlv[aria-pressed="true"]{box-shadow:inset 0 0 0 3px var(--coin)}
+.mlv:disabled{opacity:.4;cursor:default}
+.mcard{background:var(--sheet);border-radius:22px;padding:14px;display:grid;grid-template-columns:92px 1fr;gap:4px 12px;align-items:center}
+.mcard .verity{position:relative;left:auto;bottom:auto;transform:none;width:92px;height:92px;cursor:default}
+.mbub{background:#fff;color:var(--ink);border-radius:14px;padding:8px 12px;font-size:1.05rem;line-height:1.2;position:relative;justify-self:start}
+.mbub::before{content:"";position:absolute;left:-8px;top:50%;margin-top:-8px;border:8px solid transparent;border-right-color:#fff;border-left:0}
+.mbub.pop{animation:pop .3s ease-out}
+.mq{grid-column:1/-1;text-align:center;font-size:clamp(2.6rem,12vw,4rem);line-height:1.1;margin-top:6px;font-variant-numeric:tabular-nums}
+.mq.long{font-size:clamp(2rem,9vw,3.2rem)}
+.mstreak{grid-column:1/-1;display:flex;gap:6px;align-items:center;justify-content:center;font-size:.9rem;color:var(--muted)}
+.mstreak i{width:14px;height:14px;border-radius:50%;background:rgba(255,255,255,.18);display:inline-block}
+.mstreak i.on{background:var(--coin)}
+.mstreak .dim{color:var(--muted)}
+.mans{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
+.mopt{border:0;border-radius:18px;padding:18px 6px;font:inherit;font-size:clamp(1.8rem,8vw,2.6rem);background:var(--text);color:var(--ink);box-shadow:0 5px 0 #b8acd9;cursor:pointer;font-variant-numeric:tabular-nums}
+.mopt.right{background:#4fd36b;box-shadow:0 5px 0 #1f8a41;color:#fff}
+.mopt.wrong{background:#ffb3a8;box-shadow:none;opacity:.6;animation:shake .4s}
+.mfoot{display:flex;align-items:center;justify-content:space-between;gap:10px}
+.mshow{border:0;border-radius:999px;padding:10px 18px;font:inherit;font-size:1.05rem;background:#3d9bff;color:#fff;box-shadow:0 4px 0 #1c5fc4;cursor:pointer}
+.mshow:disabled{background:rgba(0,0,0,.28);box-shadow:none;color:var(--muted);cursor:default}
+.mpay{display:flex;align-items:center;gap:5px;color:var(--coin);font-size:1.05rem}.mpay .c{width:1em;height:1em}
+.mhelp{background:var(--sheet);border-radius:18px;padding:12px;text-align:center}
+.mhelp svg{width:100%;height:auto;display:block;margin:0 auto}
+.mhelp p{margin:8px 0 0;font-size:1.05rem}
+.mintro{position:absolute;inset:0;background:var(--sky-bot);z-index:3;display:flex;align-items:center;justify-content:center;padding:10px}
+.mi-body{background:var(--sheet);border-radius:22px;padding:20px;max-width:440px;width:100%;display:flex;flex-direction:column;gap:12px;align-items:center;text-align:center}
+.mi-body h3{margin:0;font-weight:400;font-size:2rem}
+.mi-body p{margin:0;font-size:1.15rem;line-height:1.35}
+.mi-pic svg{width:100%;max-width:340px;height:auto}
+.mi-pile{display:flex;flex-wrap:wrap;gap:6px;justify-content:center;min-height:40px;cursor:pointer;padding:6px;border-radius:14px;background:rgba(255,255,255,.08);max-width:320px}
+.mi-pile .ck{width:30px;height:30px;border-radius:50%;background:#d9a05b;border:3px solid var(--ink);box-shadow:inset -4px -4px 0 rgba(0,0,0,.15)}
+.mi-empty{color:var(--muted);align-self:center}
+.mi-msg{color:var(--coin)}
+.mi-body .big{font-size:1.4rem;padding:14px 28px;border:0;border-radius:999px;background:var(--coin);color:var(--ink);box-shadow:0 5px 0 #b88a00;cursor:pointer;font-family:inherit}
 .talkbar{position:absolute;left:0;right:0;bottom:10px;display:flex;align-items:center;justify-content:center;gap:12px;flex-wrap:wrap;z-index:1}
 body.playmode .hint{bottom:86px}
 .ear{width:62px;height:62px;border-radius:50%;border:0;cursor:pointer;display:flex;align-items:center;justify-content:center;background:rgba(0,0,0,.3);color:var(--text);flex:none}
@@ -264,13 +319,34 @@ body.playmode .verity{touch-action:none}
 <div class="stage">
   <div class="top">
     <button class="pill icon" id="mute" type="button" aria-label="Sound on" aria-pressed="false"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 9 H8 L13 5 V19 L8 15 H4 Z" fill="currentColor"/><path d="M16.5 9 Q19 12 16.5 15 M19 6.5 Q23.5 12 19 17.5"/></svg></button>
-    <div class="modes" role="group" aria-label="Mode"><button class="mode" type="button" data-mode="tap" aria-pressed="true">Tap</button><button class="mode" type="button" data-mode="play" aria-pressed="false">Play</button><button class="mode" type="button" data-mode="house" aria-pressed="false">House</button></div>
+    <div class="modes" role="group" aria-label="Mode"><button class="mode" type="button" data-mode="tap" aria-pressed="true">Work</button><button class="mode" type="button" data-mode="play" aria-pressed="false">Play</button><button class="mode" type="button" data-mode="house" aria-pressed="false">House</button></div>
     <button class="pill shop" id="openShop" type="button">Shop</button>
   </div>
   <div class="score" id="score">
     <div class="num"><svg class="c" viewBox="0 0 20 20" aria-hidden="true"><circle cx="10" cy="10" r="9" fill="#ffd400" stroke="#b88a00" stroke-width="2"/><circle cx="10" cy="10" r="4.5" fill="none" stroke="#b88a00" stroke-width="1.6"/></svg><span id="num">0</span></div>
     <div class="label" id="perLabel">+1 coin per tap</div>
+    <div class="jobs" role="group" aria-label="Job"><button class="job" type="button" data-job="tap" aria-pressed="true">Tap</button><button class="job" type="button" data-job="math" aria-pressed="false">Math</button></div>
+    <div class="energy" id="energy"><span>Energy</span><div class="ebar"><i id="efill"></i></div><span id="etext">50 / 50</span></div>
   </div>
+  <section class="mathp" id="mathPanel" aria-label="Math job">
+    <div class="msecs" id="msecs">
+      <button class="msec" type="button" data-sec="add"><b>+</b>Adding</button>
+      <button class="msec" type="button" data-sec="sub"><b>−</b>Taking away</button>
+      <button class="msec" type="button" data-sec="mul"><b>×</b>Times</button>
+      <button class="msec" type="button" data-sec="div"><b>÷</b>Sharing</button>
+    </div>
+    <div class="mlevels" id="mlevels"></div>
+    <div class="mcard">
+      <div class="verity" id="mface"></div>
+      <div class="mbub" id="mbub">Pick an answer!</div>
+      <div class="mq" id="mq">2 + 2 = ?</div>
+      <div class="mstreak" id="mstreak"></div>
+    </div>
+    <div class="mans" id="mans"></div>
+    <div class="mfoot"><button class="mshow" id="mshow" type="button" disabled>Show me</button><span class="mpay" id="mpay"></span></div>
+    <div class="mhelp" id="mhelp" hidden></div>
+    <div class="mintro" id="mintro" hidden><div class="mi-body"></div></div>
+  </section>
   <div class="play" id="play">
     <div class="ground"></div>
     <div class="shadow" id="shadow"></div>
@@ -630,6 +706,8 @@ body.playmode .verity{touch-action:none}
   v.addEventListener("click",function(ev){
     if(mode==="play")return;
     wake();
+    if(energyNow()<1){drawEnergy();if(!busy)react("yawn");hint.hidden=false;hint.textContent=cur().name+" is tired! Try the Math job while she rests.";return}
+    st.energy--;if(st.energy===EMAX-1)st.enT=Date.now();drawEnergy();
     var m=cur();st.coins+=m.per;save();drawCoins();hint.hidden=true;
     restart(v,"jump");restart(sh,"jump");restart(box,"pop");
     var r=play.getBoundingClientRect(),vr=v.getBoundingClientRect();
@@ -794,7 +872,7 @@ body.playmode .verity{touch-action:none}
 
   // ---- Tap / Play switch ----
   var modeBtns=document.querySelectorAll(".mode");
-  function setGameMode(m){mode=m;document.body.classList.toggle("playmode",m==="play");document.body.classList.toggle("housemode",m==="house");houseShow(m==="house");
+  function setGameMode(m){mode=m;document.body.classList.toggle("playmode",m==="play");document.body.classList.toggle("housemode",m==="house");houseShow(m==="house");document.body.classList.toggle("mathjob",m==="tap"&&job==="math");if(m==="tap"){drawEnergy();if(job==="math")mathOpen()}
     modeBtns.forEach(function(b){b.setAttribute("aria-pressed",b.dataset.mode===m)});
     hint.hidden=m==="tap"&&st.coins>0;talkbar.hidden=m!=="play";gagsEl.hidden=m!=="play";if(m!=="play"){earsOff();toggleTray(false)}drawMain();drawEars();wake()}
   modeBtns.forEach(function(b){b.addEventListener("click",function(){if(mode!==b.dataset.mode){setGameMode(b.dataset.mode);sfx("pop")}})});
@@ -978,7 +1056,7 @@ body.playmode .verity{touch-action:none}
     if(st.coins<price){flash("Need "+price+" coins! Earn more in Tap mode.");b.animate([{transform:"translateX(-5px)"},{transform:"translateX(5px)"},{transform:"none"}],{duration:250});return}
     var from=btnPt(b);toggleTray(false);
     runGag(f==="cake"?3700:f==="chili"?2900:2500,function(){
-      st.coins-=price;save();drawCoins();
+      st.coins-=price;save();drawCoins();addEnergy({cookie:10,broccoli:20,chili:15,cake:40}[f]);
       var mp=mouthPt(),r=rel(mp),p=document.createElement("div");p.className="plus";p.textContent="-"+price;p.style.left=r.x+"px";p.style.top=(r.y-150)+"px";play.appendChild(p);setTimeout(function(){p.remove()},800);
       setX("talk");mouthSize(26);anim("r-listen");
       fly(FOODSVG[f],from,mp,450,function(){
@@ -1400,6 +1478,180 @@ body.playmode .verity{touch-action:none}
   hc.addEventListener("pointerleave",function(){if(!hdown)hover=null});
   houseLoad();
 
+
+  // ================= WORK: energy for the Tap job =================
+  var EMAX=50,EREGEN=10;   // 50 taps, then 1 tap of energy back every 10 seconds (about 8 minutes to full)
+  if(typeof st.energy!=="number"){st.energy=EMAX;st.enT=Date.now()}
+  function energyNow(){var now=Date.now(),gain=Math.floor((now-(st.enT||now))/1000/EREGEN);if(gain>0){st.energy=Math.min(EMAX,st.energy+gain);st.enT=(st.energy>=EMAX)?now:st.enT+gain*EREGEN*1000}if(st.energy>=EMAX)st.enT=now;return st.energy}
+  var efill=document.getElementById("efill"),etext=document.getElementById("etext");
+  function drawEnergy(){var e=energyNow();efill.style.width=(e/EMAX*100)+"%";efill.classList.toggle("low",e<10);etext.textContent=e>0?e+" / "+EMAX:"Resting…"}
+  setInterval(function(){if(mode==="tap")drawEnergy()},1000);
+  function addEnergy(n){energyNow();st.energy=Math.min(EMAX,st.energy+n);save();drawEnergy()}
+
+  // ================= WORK: jobs =================
+  var job=st.job||"tap",mathPanel=document.getElementById("mathPanel");
+  function setJob(j){job=j;st.job=j;save();
+    document.querySelectorAll(".job").forEach(function(b){b.setAttribute("aria-pressed",b.dataset.job===j)});
+    document.body.classList.toggle("mathjob",j==="math"&&mode==="tap");
+    if(j==="math"&&mode==="tap")mathOpen();
+  }
+  document.querySelectorAll(".job").forEach(function(b){b.addEventListener("click",function(){if(job!==b.dataset.job){setJob(b.dataset.job);sfx("pop")}})});
+
+  // ================= WORK: math job =================
+  var SECS={
+    add:{name:"Adding",sym:"+",levels:["Up to 20","Past 20","Big numbers","Big + carry"],pay:[5,10,20,40]},
+    sub:{name:"Taking away",sym:"−",levels:["Up to 20","Past ten","Big numbers","Big + borrow"],pay:[5,10,20,40]},
+    mul:{name:"Times",sym:"×",levels:["2s, 5s, 10s","All tables","Missing number"],pay:[8,15,30]},
+    div:{name:"Sharing",sym:"÷",levels:["Easy sharing","All tables"],pay:[15,30]}
+  };
+  var M;
+  function initMath(){if(!st.math)st.math={sec:"add",lv:{add:0,sub:0,mul:0,div:0},max:{add:0,sub:0,mul:0,div:0},streak:{add:0,sub:0,mul:0,div:0},intro:{},first:true,stats:{}};M=st.math}
+  initMath();
+  function R(a,b){return a+Math.floor(Math.random()*(b-a+1))}
+  function gen(sec,lv){
+    var a,b,g=0;
+    if(sec==="add"){
+      if(lv===0){if(M.first)return {a:2,b:2,ans:4,txt:"2 + 2",joke:true};a=R(3,9);b=R(3,9)}
+      else if(lv===1){do{a=R(11,19);b=R(3,9)}while((a%10)+b<10)}
+      else if(lv===2){do{a=R(2,7)*10+R(1,5);b=R(1,2)*10+R(1,4)}while((a%10)+(b%10)>=10)}
+      else{do{a=R(15,69);b=R(12,29)}while((a%10)+(b%10)<10||a+b>=100)}
+      return {a:a,b:b,ans:a+b,txt:a+" + "+b};
+    }
+    if(sec==="sub"){
+      if(lv===0){if(Math.random()<.5){a=R(6,10);b=R(2,a-3)}else{a=R(13,19);b=R(1,a%10)}}
+      else if(lv===1){do{a=R(11,25);b=R(3,9)}while(a%10>=b)}
+      else if(lv===2){do{a=R(35,98);b=R(11,a-11)}while((b%10)>(a%10))}
+      else{do{a=R(41,95);b=R(12,a-6)}while((b%10)<=(a%10))}
+      return {a:a,b:b,ans:a-b,txt:a+" − "+b};
+    }
+    if(sec==="mul"){
+      if(lv===0){a=[2,5,10][R(0,2)];b=R(1,10);if(Math.random()<.5){var t=a;a=b;b=t}return {a:a,b:b,ans:a*b,txt:a+" × "+b}}
+      if(lv===1){a=R(2,10);b=R(2,10);return {a:a,b:b,ans:a*b,txt:a+" × "+b}}
+      a=R(2,10);b=R(2,10);return {a:a,b:b,ans:a,txt:"? × "+b+" = "+(a*b),miss:true,c:a*b};
+    }
+    var d=lv===0?[2,5,10][R(0,2)]:R(2,10),q=R(lv===0?1:2,10);
+    return {a:d*q,b:d,ans:q,txt:(d*q)+" ÷ "+d};
+  }
+  function choices(ans){var c=[ans],cand=[ans+1,ans-1,ans+2,ans-2,ans+10,ans-10,ans+3].filter(function(x){return x>=0&&x!==ans});
+    cand.sort(function(){return Math.random()-.5});for(var i=0;i<cand.length&&c.length<3;i++)if(c.indexOf(cand[i])<0)c.push(cand[i]);
+    return c.sort(function(){return Math.random()-.5})}
+
+  // ---- pictures for "Show me" (they still count the answer themselves) ----
+  function dotsSVG(groups,opts){
+    opts=opts||{};var r=7,gp=18,out="",x=10,y=14,maxW=0,H=0;
+    groups.forEach(function(gr,gi){
+      if(gi>0&&gr.sign){out+='<text x="'+(x+4)+'" y="'+(y+22)+'" font-size="26" fill="#fff" font-family="Lilita One,system-ui">'+gr.sign+'</text>';x+=30}
+      var n=gr.n,tens=gr.rods?Math.floor(n/10):0,ones=gr.rods?n%10:n,gx=x;
+      for(var t=0;t<tens;t++){out+='<rect x="'+gx+'" y="'+y+'" width="12" height="'+(10*gp-4)+'" rx="3" fill="'+gr.col+'" stroke="#1d1230" stroke-width="2"/>';for(var k=1;k<10;k++)out+='<line x1="'+gx+'" x2="'+(gx+12)+'" y1="'+(y+k*gp-2)+'" y2="'+(y+k*gp-2)+'" stroke="#1d1230" stroke-width="1"/>';gx+=18}
+      var cols=gr.rods?1:Math.min(10,gr.cols||5),rows=Math.ceil(ones/cols);
+      for(var i=0;i<ones;i++){var cx2=gx+(i%cols)*gp+r,cy2=y+Math.floor(i/cols)*gp+r,crossed=gr.cross&&i>=ones-gr.cross;
+        out+='<circle cx="'+cx2+'" cy="'+cy2+'" r="'+r+'" fill="'+gr.col+'" stroke="#1d1230" stroke-width="2"'+(crossed?' opacity=".45"':'')+'/>';
+        if(crossed)out+='<path d="M'+(cx2-6)+' '+(cy2-6)+'L'+(cx2+6)+' '+(cy2+6)+'M'+(cx2+6)+' '+(cy2-6)+'L'+(cx2-6)+' '+(cy2+6)+'" stroke="#e0281b" stroke-width="3" stroke-linecap="round"/>'}
+      var w=(gx-x)+(ones?Math.min(cols,ones)*gp:0);x+=w+12;maxW=Math.max(maxW,x);H=Math.max(H,gr.rods&&tens?10*gp:rows*gp);
+    });
+    return '<svg viewBox="0 0 '+(maxW+4)+' '+(H+24)+'" style="max-height:'+Math.min(240,H+24)+'px">'+out+'</svg>';
+  }
+  function platesSVG(n,each,dealt){
+    var pw=Math.min(90,Math.floor(300/n)),out="",w=n*pw+10,h=pw*.95;
+    for(var i=0;i<n;i++){var cx2=10+i*pw+pw/2,cy2=h/2+6;
+      out+='<ellipse cx="'+cx2+'" cy="'+cy2+'" rx="'+(pw*.44)+'" ry="'+(pw*.4)+'" fill="#f4f6fb" stroke="#1d1230" stroke-width="2"/>';
+      var k=dealt?dealt[i]:each;for(var j=0;j<k;j++){var a=j/Math.max(1,k)*Math.PI*2,rr2=k>1?pw*.22:0;
+        out+='<circle cx="'+(cx2+Math.cos(a)*rr2)+'" cy="'+(cy2+Math.sin(a)*rr2*.85)+'" r="'+Math.max(4,pw*.08)+'" fill="#d9a05b" stroke="#1d1230" stroke-width="1.5"/>'}}
+    return '<svg viewBox="0 0 '+w+' '+(h+12)+'">'+out+'</svg>';
+  }
+  function helpFor(Q,sec,lv){
+    var Y="#ffd400",B="#3d9bff";
+    if(sec==="add"){var big=lv>=2;return dotsSVG([{n:Q.a,col:Y,rods:big,cols:5},{n:Q.b,col:B,rods:big,cols:5,sign:"+"}])+'<p>Count them all together.</p>'}
+    if(sec==="sub"){if(lv>=2)return dotsSVG([{n:Q.a,col:Y,rods:true}])+'<p>Start with '+Q.a+'. Take away '+Math.floor(Q.b/10)+' tens and '+(Q.b%10)+' ones.</p>';
+      return dotsSVG([{n:Q.a,col:Y,cols:5,cross:Q.b}])+'<p>Count the ones that are left.</p>'}
+    if(sec==="mul"){if(Q.miss)return dotsSVG([{n:Q.c,col:Y,cols:Q.b}])+'<p>Each row has '+Q.b+'. How many rows?</p>';
+      return dotsSVG([{n:Q.a*Q.b,col:Y,cols:Q.b}])+'<p>'+Q.a+' rows of '+Q.b+'. Count them all.</p>'}
+    return platesSVG(Q.b,Q.ans)+'<p>'+Q.a+' cookies shared onto '+Q.b+' plates. How many on one plate?</p>';
+  }
+
+  // ---- math screen ----
+  var msecs=document.getElementById("msecs"),mlevels=document.getElementById("mlevels"),mq=document.getElementById("mq"),mans=document.getElementById("mans"),
+      mshow=document.getElementById("mshow"),mpay=document.getElementById("mpay"),mhelp=document.getElementById("mhelp"),mbub=document.getElementById("mbub"),
+      mface=document.getElementById("mface"),mstreak=document.getElementById("mstreak"),mintro=document.getElementById("mintro");
+  var Q=null,qTries=0,qHelp=false,qStart=0,qTimer=null,retry=[],sinceRetry=0,locked=false;
+  function secLv(){return M.lv[M.sec]}
+  function payNow(){return SECS[M.sec].pay[secLv()]}
+  function drawMathHead(){
+    msecs.querySelectorAll(".msec").forEach(function(b){b.setAttribute("aria-pressed",b.dataset.sec===M.sec)});
+    var S=SECS[M.sec];
+    mlevels.innerHTML=S.levels.map(function(n,i){var open=i<=M.max[M.sec];return '<button class="mlv" type="button" data-lv="'+i+'" aria-pressed="'+(i===secLv())+'"'+(open?'':' disabled')+'><b>'+(open?'Level '+(i+1):'Locked')+'</b><span>'+(open?n:'5 in a row')+'</span><span class="pr">'+COINI+S.pay[i]+'</span></button>'}).join("");
+    var s=M.streak[M.sec]||0;mstreak.innerHTML=(secLv()<M.max[M.sec]?'<span class="dim">Practice level. The newest level pays more!</span>':(secLv()<S.levels.length-1?'Level up: '+'●●●●●'.slice(0,s).split('').map(function(){return '<i class="on"></i>'}).join('')+'<i></i>'.repeat(5-s):'<span class="dim">Top level!</span>'));
+  }
+  function mface_(x,anim){var e=mface.querySelector("svg");if(!e)return;if(x)e.setAttribute("data-x",x);else e.removeAttribute("data-x");
+    if(anim){ANIMS.forEach(function(a){e.classList.remove(a)});e.getBoundingClientRect();e.classList.add(anim)}}
+  function say(t){mbub.textContent=t;mbub.classList.remove("pop");mbub.getBoundingClientRect();mbub.classList.add("pop")}
+  function nextQ(){
+    clearTimeout(qTimer);locked=false;qTries=0;qHelp=false;mhelp.hidden=true;mhelp.innerHTML="";
+    sinceRetry++;
+    var rq=null;if(retry.length&&sinceRetry>=3){for(var i=0;i<retry.length;i++)if(retry[i].sec===M.sec&&retry[i].lv===secLv()){rq=retry.splice(i,1)[0];break}}
+    Q=rq?rq.Q:gen(M.sec,secLv());if(rq)sinceRetry=0;
+    mq.textContent=Q.txt+(Q.miss?"":" = ?");mq.classList.toggle("long",mq.textContent.length>11);
+    var ch=choices(Q.ans);mans.innerHTML=ch.map(function(v){return '<button class="mopt" type="button" data-v="'+v+'">'+v+'</button>'}).join("");
+    mshow.disabled=true;mpay.innerHTML='First try: '+COINI+payNow();qStart=Date.now();
+    qTimer=setTimeout(function(){mshow.disabled=false},8000);
+    mface_(null);if(rq)say("This one came back! You've got it now.");
+  }
+  mans.addEventListener("click",function(ev){
+    var b=ev.target.closest(".mopt");if(!b||b.disabled||locked)return;var v=+b.dataset.v;
+    var st2=M.stats[M.sec]=M.stats[M.sec]||{r:0,w:0};
+    if(v===Q.ans){
+      locked=true;b.classList.add("right");
+      var pay=qTries===0?(qHelp?Math.ceil(payNow()/2):payNow()):0;
+      if(qTries===0)st2.r++;
+      if(pay){st.coins+=pay;drawCoins();chaching();var r1=b.getBoundingClientRect(),pr=mathPanel.getBoundingClientRect(),f=document.createElement("div");f.className="plus";f.textContent="+"+pay;f.style.left=(r1.left-pr.left+r1.width/2)+"px";f.style.top=(r1.top-pr.top-10)+"px";mathPanel.appendChild(f);setTimeout(function(){f.remove()},800)}
+      else sfx("pop");
+      if(Q.joke){M.first=false;say("Ha! 2 + 2? That one was too easy!");sfx("giggle");mface_("happy","r-hop")}
+      else{mface_("happy","r-hop");say(pay?(["Yes!","Nice one!","Brain power!","You got it!","Super!"][R(0,4)]+(qHelp?" (half coins with Show me)":"")):"That's it! Coins come on first tries, so take your time.")}
+      if(qTries===0&&!qHelp&&secLv()===M.max[M.sec]){M.streak[M.sec]=(M.streak[M.sec]||0)+1;
+        if(M.streak[M.sec]>=5&&M.max[M.sec]<SECS[M.sec].levels.length-1){M.max[M.sec]++;M.lv[M.sec]=M.max[M.sec];M.streak[M.sec]=0;
+          setTimeout(function(){sfx("tune");say("Level up! "+SECS[M.sec].levels[secLv()]+": "+payNow()+" coins each!");mface_("happy","r-dance")},700)}}
+      save();drawMathHead();setTimeout(nextQ,M.streak[M.sec]===0&&qTries===0&&!qHelp?2200:1100);
+    }else{
+      qTries++;st2.w++;b.disabled=true;b.classList.add("wrong");mface_("wince","r-shake");sfx("boop");
+      M.streak[M.sec]=Math.max(0,(M.streak[M.sec]||0)-2);
+      if(qTries===1){retry.push({sec:M.sec,lv:secLv(),Q:Q});say("Hmm, not quite. Try again!")}else say("Tap Show me for a picture.");
+      clearTimeout(qTimer);mshow.disabled=false;save();drawMathHead();
+    }
+  });
+  mshow.addEventListener("click",function(){if(mshow.disabled)return;qHelp=true;mhelp.innerHTML=helpFor(Q,M.sec,secLv());mhelp.hidden=false;mshow.disabled=true;
+    mpay.innerHTML=qTries===0?'With help: '+COINI+Math.ceil(payNow()/2):'No coins this time';sfx("pop")});
+  msecs.addEventListener("click",function(ev){var b=ev.target.closest(".msec");if(!b||b.dataset.sec===M.sec)return;M.sec=b.dataset.sec;save();sfx("pop");mathOpen()});
+  mlevels.addEventListener("click",function(ev){var b=ev.target.closest(".mlv");if(!b||b.disabled)return;M.lv[M.sec]=+b.dataset.lv;save();sfx("pop");drawMathHead();nextQ()});
+
+  // ---- Verity explains each section the first time ----
+  var INTRO={
+    add:{t:"Adding",p:"Adding puts groups together. 3 + 4: count them all!",pic:function(){return dotsSVG([{n:3,col:"#ffd400",cols:5},{n:4,col:"#3d9bff",cols:5,sign:"+"}])}},
+    sub:{t:"Taking away",p:"Taking away means some leave. 7 − 2: cross out 2, then count what's left!",pic:function(){return dotsSVG([{n:7,col:"#ffd400",cols:7,cross:2}])}},
+    mul:{t:"Times",p:"Times means groups that are all the same size. 3 × 4 is 3 rows of 4!",pic:function(){return dotsSVG([{n:12,col:"#ffd400",cols:4}])}}
+  };
+  var deal=null;
+  function showIntro(sec){
+    var box=mintro.querySelector(".mi-body");mintro.hidden=false;
+    if(sec==="div"){
+      deal={n:12,plates:3,dealt:[0,0,0],i:0};
+      box.innerHTML='<h3>Sharing</h3><p>Sharing means giving everyone the same amount. Tap the cookies to share 12 cookies onto 3 plates!</p><div class="mi-pile" id="mipile"></div><div class="mi-pic" id="mipic"></div><p class="mi-msg" id="mimsg"></p><button class="big" type="button" id="migo" hidden>Let\'s go!</button>';
+      drawDeal();
+      document.getElementById("mipile").addEventListener("click",function(){if(deal.i>=deal.n)return;deal.dealt[deal.i%deal.plates]++;deal.i++;sfx("pop");drawDeal();
+        if(deal.i>=deal.n){document.getElementById("mimsg").textContent="Each plate got 4! 12 shared by 3 is 4. That's 12 ÷ 3 = 4.";sfx("tune");document.getElementById("migo").hidden=false}});
+    }else{
+      var I=INTRO[sec];box.innerHTML='<h3>'+I.t+'</h3><p>'+I.p+'</p><div class="mi-pic">'+I.pic()+'</div><button class="big" type="button" id="migo">Let\'s go!</button>';
+    }
+    document.getElementById("migo").addEventListener("click",function(){M.intro[sec]=true;save();mintro.hidden=true;sfx("pop");nextQ()});
+  }
+  function drawDeal(){var left=deal.n-deal.i,pile="";for(var i=0;i<left;i++)pile+='<span class="ck"></span>';
+    document.getElementById("mipile").innerHTML=pile||'<span class="mi-empty">All shared!</span>';document.getElementById("mipic").innerHTML=platesSVG(3,0,deal.dealt)}
+  function mathOpen(){
+    mface.innerHTML=ballSVG(cur(),"mf",st.hair,st.hat,"-30 -90 260 300",st.mask);
+    drawMathHead();say(M.first?"Let's earn some coins!":"Pick an answer!");
+    if(!M.intro[M.sec]){showIntro(M.sec);return}
+    mintro.hidden=true;nextQ();
+  }
+
   // ---------- shop ----------
   var sheet=document.getElementById("sheet"),scrim=document.getElementById("scrim"),
       list=document.getElementById("list"),wallet=document.getElementById("wallet"),tab="smileys";
@@ -1596,10 +1848,10 @@ body.playmode .verity{touch-action:none}
   rb.addEventListener("click",function(){
     if(!armed){rb.textContent="Tap again to erase everything";armed=setTimeout(function(){rb.textContent=RB_LABEL;armed=null},2500);return}
     clearTimeout(armed);armed=null;rb.textContent=RB_LABEL;
-    st=fresh();save();houseLoad();drawMain();drawCoins();hint.hidden=false;
+    st=fresh();st.energy=EMAX;st.enT=Date.now();st.math=null;initMath();save();houseLoad();drawMain();drawCoins();drawEnergy();setJob("tap");hint.hidden=false;
   });
 
-  drawMain();drawCoins();
+  drawMain();drawCoins();drawEnergy();setJob(job);
   if(st.coins>0)hint.hidden=true;
 })();
 </script>
