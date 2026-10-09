@@ -447,12 +447,12 @@ body.playmode .verity{touch-action:none}
   // ---------- smileys ----------
   var MODELS=[
     {id:"verity",   name:"Verity",    price:0,    per:1,  col:["#fff59a","#ffd400","#d99200"], face:"smile"},
-    {id:"snowity",  name:"Snowity",   price:50,   per:2,  col:["#ffffff","#eef6ff","#a9c4e6"], face:"snow"},
-    {id:"lovity",   name:"Lovity",    price:200,  per:3,  col:["#ffe0ef","#ff8fc4","#d9488d"], face:"love"},
-    {id:"falsity",  name:"Falsity",   price:500,  per:5,  col:["#bfe2ff","#3d9bff","#1c5fc4"], face:"sly"},
-    {id:"curiosity",name:"Curiosity", price:1200, per:8,  col:["#d8ffb0","#7ed321","#3f8f12"], face:"curious"},
-    {id:"cruelty",  name:"Cruelty",   price:2500, per:12, col:["#ff9a8a","#e0281b","#7d0d0d"], face:"cruel"},
-    {id:"variety",  name:"Variety",   price:5000, per:25, col:null, face:"rainbow"}
+    {id:"snowity",  name:"Snowity",   price:50,   per:1,  col:["#ffffff","#eef6ff","#a9c4e6"], face:"snow"},
+    {id:"lovity",   name:"Lovity",    price:200,  per:1,  col:["#ffe0ef","#ff8fc4","#d9488d"], face:"love"},
+    {id:"falsity",  name:"Falsity",   price:500,  per:1,  col:["#bfe2ff","#3d9bff","#1c5fc4"], face:"sly"},
+    {id:"curiosity",name:"Curiosity", price:1200, per:1,  col:["#d8ffb0","#7ed321","#3f8f12"], face:"curious"},
+    {id:"cruelty",  name:"Cruelty",   price:2500, per:1, col:["#ff9a8a","#e0281b","#7d0d0d"], face:"cruel"},
+    {id:"variety",  name:"Variety",   price:5000, per:1, col:null, face:"rainbow"}
   ];
 
   function star(cx,cy,R,r){var p=[];for(var i=0;i<10;i++){var a=-Math.PI/2+i*Math.PI/5,rr=i%2?r:R;p.push((cx+rr*Math.cos(a)).toFixed(1)+","+(cy+rr*Math.sin(a)).toFixed(1))}return '<polygon points="'+p.join(" ")+'" fill="'+INK+'"/>'}
@@ -1726,7 +1726,7 @@ body.playmode .verity{touch-action:none}
     if(tab==="smileys"){
       html=MODELS.map(function(x){
         var own=st.owned.indexOf(x.id)>-1,on=st.using===x.id,btn=on?'<button class="act using" type="button" disabled>Using</button>':own?'<button class="act use" type="button" data-kind="smiley" data-use="'+x.id+'">Use</button>':buyBtn("smiley",x.id,x.price);
-        return row(on,ballSVG(x,x.id,null,null,PREV),x.name,'<b>+'+x.per+'</b> per tap',btn);
+        return row(on,ballSVG(x,x.id,null,null,PREV),x.name,'Just for looks',btn);
       }).join("");
     } else if(tab==="masks"){
       var wear=function(id,on,owned,price){return on?'<button class="act off" type="button" data-kind="mask" data-off="1">Take off</button>':owned?'<button class="act use" type="button" data-kind="mask" data-use="'+id+'">Wear</button>':buyBtn("mask",id,price)};
