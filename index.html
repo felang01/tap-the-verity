@@ -3242,21 +3242,14 @@ function shelf(x,y,w){vSh(vRect(x,y,w,7,2),WOOD,WOODD,2,2.5);[[x+8],[x+w-12]].fo
   G.fillStyle="#fff";G.beginPath();G.arc(x+40,y+28,8,0,7);G.arc(x+50,y+24,10,0,7);G.arc(x+60,y+28,7,0,7);G.fill();G.restore();
   vOl(5);G.strokeStyle=K;vRect(x,y,w,h,58)();G.stroke();vOl(3);G.strokeStyle=CREAM;vRect(x,y,w,h,58)();G.stroke();
   G.fillStyle=CREAM;G.fillRect(x+w/2-3,y,6,h);G.fillRect(x,y+h*.55,w,6);vOl(1.5);G.strokeRect(x+w/2-3,y,6,h);G.strokeRect(x,y+h*.55,w,6);
-  vSh(vRect(x-8,y+h-2,w+16,9,3),CREAM,CREAMD,1.5,2.5);potPlant(x+18,y+h-2,.7,false);potPlant(x+w-18,y+h-2,.6,true);
+  vSh(vRect(x-8,y+h-2,w+16,9,3),CREAM,CREAMD,1.5,2.5);
 })();
 // range hood (copper) over the stove
 (function(){const x=318,w=112;vSh(vPoly([[x+30,40],[x+w-30,40],[x+w-30,150],[x+w,190],[x,190],[x+30,150]]),COPPER,COPPERD,3,2.5);
   vSh(vRect(x-4,186,w+8,10,3),COPPERD,"#8a4e20",1.5,2.5);G.strokeStyle="rgba(255,230,190,.6)";G.lineWidth=3;G.beginPath();G.moveTo(x+40,52);G.lineTo(x+40,146);G.stroke();})();
 // open shelves right of hood: dishes, jars, plants, egg basket, wheat
 (function(){shelf(452,118,170);shelf(452,186,170);
-  plateStack(472,116,4);mug(500,117,TERRA);mug(518,117,SAGE);jar(548,117,16,22,"#ffb000","#c98a3d");jar(568,117,14,18,"#e0281b");potPlant(600,117,.75,true);
-  // egg basket
-  vSh(()=>{G.beginPath();G.moveTo(462,170);G.lineTo(498,170);G.lineTo(494,185);G.lineTo(466,185);G.closePath()},"#d9a066","#b07a3f",1.5,2);[[470],[480],[490]].forEach(e=>vSh(vEll(e[0],168,5,6.5),"#fffaf0","#e8dcc4",1,1.8));
-  // wheat in a vase
-  vSh(vRect(512,166,16,20,5),SAGE,SAGED,1.5,2);for(let i=-2;i<=2;i++){G.strokeStyle="#c99a1e";G.lineWidth=1.5;G.beginPath();G.moveTo(520,166);G.lineTo(520+i*5,146);G.stroke();vSh(vEll(520+i*5,143,2.5,5),"#f2c14e","#c99a1e",.5,1.4)}
-  jar(546,185,14,24,"#7fd36b");jar(564,185,14,20,"#fff5c0");jar(582,185,14,26,"#7b3fe4");
-  // cookbook stack
-  vSh(vRect(598,172,22,7,1),TERRA,TERRAD,1,1.8);vSh(vRect(600,165,18,7,1),SAGE,SAGED,1,1.8);
+  
   // utensil rail + towel
   G.fillStyle="#9aa3b5";G.fillRect(452,218,130,3);vOl(1.5);G.strokeRect(452,218,130,3);
   vOl(2.5);[[468,"spoon"],[488,"ladle"],[508,"whisk"],[528,"spat"]].forEach(u=>{G.beginPath();G.moveTo(u[0],220);G.lineTo(u[0],240);G.stroke();
@@ -3283,7 +3276,7 @@ vSh(vRect(134,252,324,12,3),WOOD,WOODD,2,2.5);
 (function(){vSh(vRect(160,246,86,8,3),"#c8ccd6","#9aa3b5",1.5,2.2);vOl(4);G.beginPath();G.moveTo(203,247);G.lineTo(203,214);G.quadraticCurveTo(203,206,213,206);G.lineTo(218,206);G.stroke();G.strokeStyle="#c8ccd6";G.lineWidth=2;G.stroke();
   vSh(vEll(196,246,4,3),COPPER,COPPERD,1,1.5);vSh(vEll(210,246,4,3),COPPER,COPPERD,1,1.5);
   // dish rack + soap
-  potPlant(262,252,.6,false);})();
+  })();
 // stove top plate
 vSh(vRect(318,244,118,9,3),"#4a4458","#2e2a38",1.5,2.2);
 // ---------- fridge (retro, magnets) + pantry cabinet over it ----------
@@ -3308,7 +3301,7 @@ vSh(vRect(318,244,118,9,3),"#4a4458","#2e2a38",1.5,2.2);
   // bread box + plant on top
   vSh(()=>{G.beginPath();G.moveTo(x+14,y-8);G.lineTo(x+14,y-34);G.quadraticCurveTo(x+14,y-46,x+30,y-46);G.lineTo(x+62,y-46);G.quadraticCurveTo(x+76,y-46,x+76,y-34);G.lineTo(x+76,y-8);G.closePath()},TERRA,TERRAD,2,2.5);
   G.fillStyle=CREAM;G.font="bold 10px system-ui";G.textAlign="center";G.fillText("BREAD",x+45,y-24);
-  potPlant(x+112,y-8,.95,true);vSh(vRect(x+128,y-30,16,22,3),CREAM,CREAMD,1.5,2);G.strokeStyle=K;G.lineWidth=1.5;G.beginPath();G.arc(x+136,y-19,4,0,7);G.stroke();
+  
 })();
 // wall clock + pictures over the dining nook
 (function(){vSh(vEll(660,110,24,24),CREAM,CREAMD,2,2.5);vOl(2.5);G.beginPath();G.moveTo(660,110);G.lineTo(660,96);G.moveTo(660,110);G.lineTo(670,115);G.stroke();
@@ -3338,8 +3331,7 @@ sideChair(644,TY+26,false);sideChair(876,TY+26,true);
 (function(){vSh(vRect(656,TY,208,12,4),WOOD,WOODD,2,2.5);vSh(vRect(664,TY+12,192,10,2),WOODD,"#7a4a22",1,2);
   [[674],[846]].forEach(l=>vSh(vRect(l[0],TY+20,10,FLOOR-TY-14,3),WOOD,WOODD,1.5,2.2));
   // plate with pancakes, juice glass, flower vase
-  vSh(vRect(700,TY-24,14,24,3),"rgba(255,170,60,.85)","rgba(220,120,30,.9)",1,2);vGleam(704,TY-16,1.5,5);
-  vSh(vRect(812,TY-16,14,16,4),SAGE,SAGED,1,2);[[-5,"#ff5fa2"],[0,"#ffd400"],[5,"#fff"]].forEach(f=>{G.strokeStyle="#3aa346";G.lineWidth=1.5;G.beginPath();G.moveTo(819,TY-16);G.lineTo(819+f[0],TY-30);G.stroke();vSh(vEll(819+f[0],TY-32,4,4),f[1],vDark(f[1]==="#fff"?"#eeeeee":f[1],.8),.5,1.5)});})();
+})();
 // ---------- island (front) with prep board + 4 stools ----------
 (function(){const x=150,y=430,w=420;
   vSh(vRect(x+6,y+12,w-12,KH-y-12+8,4),SAGE,SAGED,3,2.5);
@@ -3347,7 +3339,7 @@ sideChair(644,TY+26,false);sideChair(876,TY+26,true);
   vSh(vRect(x-6,y,w+12,14,4),WOOD,WOODD,2,2.5);
   // cutting board with carrots + knife
   vSh(vRect(x+30,y-10,108,11,5),"#e8b880","#c38a52",1.5,2.5);vSh(vEll(x+128,y-5,3,3),"#c38a52","#a8703a",.5,1.5);
-  jar(x+360,y,18,22,"#ffb000","#c98a3d");jar(x+384,y,12,16,"#e0281b");
+  
 })();
 function stool(x){const y=486;vOl(3);[[-14,-18],[14,18],[-4,-5],[4,5]].forEach(l=>{});
   [[-12,-20],[12,20]].forEach(l=>{vSh(vPoly([[x+l[0]-3,y],[x+l[0]+3,y],[x+l[1]+3,KH+4],[x+l[1]-3,KH+4]]),WOOD,WOODD,1,2.2)});
@@ -3420,6 +3412,7 @@ const lt=G.createRadialGradient(KW*.45,KH*.35,40,KW*.45,KH*.45,KW*.75);lt.addCol
     sizzle:function(c){noise(c,.7,.05,6000,0,true,"highpass")},bubble:function(c){osc(c,"sine",300+Math.random()*200,700+Math.random()*300,.08,.12)},flip:function(c){osc(c,"sine",400,900,.15,.12);noise(c,.12,.1,3000)},
     whoosh:function(c){noise(c,.25,.12,1500,0,true,"bandpass")},compost:function(c){noise(c,.2,.25,400);osc(c,"sine",200,80,.2,.2)},plop:function(c){osc(c,"sine",520,200,.1,.16)},
     cough:function(c){[0,.28,.56].forEach(function(d){noise(c,.14,.28,900,d);osc(c,"square",180,110,.12,.05,d)})},boing:function(c){osc(c,"sine",240,720,.18,.16);osc(c,"sine",720,330,.18,.1,.16)},
+    lift:function(c){osc(c,"sine",420,620,.07,.07)},thud:function(c){osc(c,"sine",160,70,.12,.22);noise(c,.05,.12,500)},clink:function(c){osc(c,"triangle",1800,1500,.12,.06);osc(c,"triangle",2400,null,.1,.03)},
     door:function(c){osc(c,"sine",220,180,.15,.15);noise(c,.1,.12,800)},ding:function(c){osc(c,"triangle",1568,null,.6,.15);osc(c,"triangle",2093,null,.5,.08,.05)}};
   function ks(n){tone(function(c){KS[n](c)})}
   // ---- state ----
@@ -3427,21 +3420,20 @@ const lt=G.createRadialGradient(KW*.45,KH*.35,40,KW*.45,KH*.45,KW*.75);lt.addCol
     if(!st.kit||!st.kit.items)st.kit={items:[],pot:{items:[],turns:0,ang:0},pan:{items:[],t:0},oven:{items:[],t:0},plate:{items:[],d:null},nid:1};
     var K2=st.kit;["pot","pan","oven"].forEach(function(s){if(!K2[s])K2[s]={items:[],t:0,turns:0}});if(!K2.plate)K2.plate={items:[],d:null};
     if(!st.kbook){st.kbook={};var MAP={soup:"vsoup",salad:"fsalad",popcorn:"popcorn",pie:"pumpkinpie",salsa:"salsa",pancakes:"pancakes",applepie:"applepie"};Object.keys(st.recipes||{}).forEach(function(k){if(MAP[k])st.kbook[MAP[k]]=1})}
-    if(!st.kfun)st.kfun={};
+    if(!st.kfun)st.kfun={};kPropsInit();
   }
   // positions in the kitchen (world units, 900 x 560)
   var KZ={pot:{x:312,y:176,w:74,h:76,cx:348,cy:222},pan:{x:380,y:204,w:76,h:50,cx:408,cy:238},oven:{x:322,y:272,w:110,h:118},board:{x:176,y:378,w:116,h:58},
     plate:{x:712,y:302,w:96,h:40},fridge:{x:26,y:176,w:102,h:226},bin:{x:592,y:462,w:56,h:98},ver:{x:760,y:272,r:50}};
-  var KSURF=[{x0:134,x1:316,y:252},{x0:470,x1:612,y:292},{x0:150,x1:570,y:430},{x0:660,x1:708,y:KTY},{x0:812,x1:860,y:KTY}];
   var KKNIFE={x:312,y:414};
   function inR(z,x,y){return x>=z.x&&x<=z.x+z.w&&y>=z.y&&y<=z.y+z.h}
   // ---- screen setup ----
   var kWrap=null,kBg=null,kFg=null,kfx=null,kVer=null,kVclip=null,kS=1,kOX=0,kOY=0,kMax=0,kDPR=1,kRun=false,kLast=0,kParts=[],kDrag=null,kGest=null,kKnife=null,kBusy=0,kSaveT=0,kSzT=0,kURL={};
-  function kDefTip(){return "Drag food up from the fridge. Chop it, cook it, then feed Verity!"}
+  function kDefTip(){return "Tap the fridge to open it. Chop food, cook it, then feed Verity!"}
   function kBuild(){
     kInit();stg.className="sstage kit2";stg.innerHTML='<div class="kwrap"><canvas class="kbg"></canvas><div class="kvclip"></div><canvas class="kfg"></canvas></div>';
     kWrap=stg.querySelector(".kwrap");kBg=stg.querySelector(".kbg");kFg=stg.querySelector(".kfg");kfx=kFg.getContext("2d");kVclip=stg.querySelector(".kvclip");
-    kVer=sceneV();kVer.className="verity kver";kVclip.appendChild(kVer);kParts=[];kDrag=null;kGest=null;kKnife=null;kOX=0;
+    kVer=sceneV();kVer.className="verity kver";kVclip.appendChild(kVer);kParts=[];kFly=[];kDrag=null;kGest=null;kKnife=null;kOX=0;kFridgeOpen=false;
     kTray();kLayout();if(!kRun){kRun=true;kLast=performance.now();requestAnimationFrame(kFrame)}sTip(kDefTip());
   }
   var kTop=0;
@@ -3468,31 +3460,92 @@ const lt=G.createRadialGradient(KW*.45,KH*.35,40,KW*.45,KH*.45,KW*.75);lt.addCol
   stray.addEventListener("pointerdown",function(ev){if(where!=="kitchen")return;var b=ev.target.closest(".kfi");if(!b)return;kTrayG={k:b.dataset.k,x:ev.clientX,y:ev.clientY,id:ev.pointerId}});
   function kTakeFromFridge(k){if(!st.fridge[k])return null;st.fridge[k]--;save();kTray();return DISHES[k]&&!KF[k]?{legacy:k}:{k:k,c:0,m:"raw"}}
   function kToFridge(t){if(t.legacy){fridgeAdd(t.legacy)}else fridgeAdd(t.k);save();kTray()}
-  // ---- dragging things ----
-  var kGhost=null;
-  function kStartDrag(t,ev,from){kDrag={t:t,from:from};var px=t.d?64:48,c=document.createElement("canvas");c.className="kghost";
-    if(t.legacy){kGhost=document.createElement("div");kGhost.className="kghost";kGhost.innerHTML=icon(t.legacy);kGhost.style.width=kGhost.style.height=(px*kS)+"px"}
-    else{var pic=kPicOf(t,px);c.width=pic.width;c.height=pic.height;c.style.width=c.style.height=(px*kS*1.1)+"px";c.getContext("2d").drawImage(pic,0,0);kGhost=c}
-    document.body.appendChild(kGhost);kMoveGhost(ev);sfx("pop")}
-  function kMoveGhost(ev){if(kGhost){kGhost.style.left=ev.clientX+"px";kGhost.style.top=ev.clientY+"px"}kDrag.cx=ev.clientX;kDrag.cy=ev.clientY}
+  // ---- decorations you can move (they're objects, not food) ----
+  function kLeafy(x,y,n,s){for(var i=0;i<n;i++){var a=-Math.PI/2+(i-(n-1)/2)*.55;vLeaf(x,y,s*(1-.12*Math.abs(i-(n-1)/2)),a,i%2?"#3aa346":"#4caa58")}}
+  function kPotPlant(x,y,s,trail){vSh(vPoly([[x-9*s,y-14*s],[x+9*s,y-14*s],[x+7*s,y],[x-7*s,y]]),TERRA,TERRAD,1.5,2);kLeafy(x,y-14*s,5,15*s);
+    if(trail){for(var i=0;i<3;i++){vLeaf(x+8*s,y-12*s+i*12*s,10*s,.6+i*.2,"#4caa58");vLeaf(x+9*s,y-6*s+i*12*s,9*s,2.4,"#3aa346")}}}
+  function kJar(x,y,w,h,col,lid){vSh(vRect(x-w/2,y-h,w,h,3),col,vDark(col,.78),1.5,2);vSh(vRect(x-w/2-1,y-h-5,w+2,6,2),lid||WOOD,vDark(lid||WOOD,.75),1,1.8);vGleam(x-w/4,y-h*.6,1.5,h*.2)}
+  function kMug(x,y,col){vSh(vRect(x-6,y-12,12,12,2),col,vDark(col,.75),1,2);vOl(2);G.beginPath();G.arc(x+7,y-6,3.5,-1.4,1.4);G.stroke()}
+  var KPROP={
+    plantS:{n:"little plant",r:15,draw:function(){kPotPlant(0,0,.7,false)}},plantXS:{n:"little plant",r:13,draw:function(){kPotPlant(0,0,.6,false)}},
+    plantT:{n:"trailing plant",r:14,draw:function(){kPotPlant(0,0,.6,true)}},plantM:{n:"trailing plant",r:16,draw:function(){kPotPlant(0,0,.75,true)}},plantL:{n:"big plant",r:20,draw:function(){kPotPlant(0,0,.95,true)}},
+    plates:{n:"stack of plates",r:16,draw:function(){for(var i=0;i<4;i++)vSh(vEll(0,-3-i*4,15,3.5),"#ffffff","#d6dbe6",1,2)}},
+    mugT:{n:"mug",r:10,draw:function(){kMug(-2,0,TERRA)}},mugS:{n:"mug",r:10,draw:function(){kMug(-2,0,SAGE)}},
+    jarH:{n:"honey jar",r:12,draw:function(){kJar(0,0,16,22,"#ffb000","#c98a3d")}},jarR:{n:"jam jar",r:11,draw:function(){kJar(0,0,14,18,"#e0281b")}},
+    jarG:{n:"pickle jar",r:12,draw:function(){kJar(0,0,14,24,"#7fd36b")}},jarC:{n:"jar of sugar",r:11,draw:function(){kJar(0,0,14,20,"#fff5c0")}},jarP:{n:"grape jam jar",r:12,draw:function(){kJar(0,0,14,26,"#7b3fe4")}},
+    jarH2:{n:"honey jar",r:12,draw:function(){kJar(0,0,18,22,"#ffb000","#c98a3d")}},jarR2:{n:"jam jar",r:10,draw:function(){kJar(0,0,12,16,"#e0281b")}},
+    eggs:{n:"egg basket",r:18,draw:function(){vSh(vPoly([[-18,-16],[18,-16],[14,-1],[-14,-1]]),"#d9a066","#b07a3f",1.5,2);[-10,0,10].forEach(function(e){vSh(vEll(e,-18,5,6.5),"#fffaf0","#e8dcc4",1,1.8)})}},
+    wheat:{n:"vase of wheat",r:14,draw:function(){vSh(vRect(-8,-20,16,20,5),SAGE,SAGED,1.5,2);for(var i=-2;i<=2;i++){G.strokeStyle="#c99a1e";G.lineWidth=1.5;G.beginPath();G.moveTo(0,-20);G.lineTo(i*5,-40);G.stroke();vSh(vEll(i*5,-43,2.5,5),"#f2c14e","#c99a1e",.5,1.4)}}},
+    books:{n:"cookbooks",r:13,draw:function(){vSh(vRect(-11,-7,22,7,1),TERRA,TERRAD,1,1.8);vSh(vRect(-9,-14,18,7,1),SAGE,SAGED,1,1.8)}},
+    canister:{n:"cookie tin",r:11,draw:function(){vSh(vRect(-8,-22,16,22,3),CREAM,CREAMD,1.5,2);G.strokeStyle=K;G.lineWidth=1.5;G.beginPath();G.arc(0,-11,4,0,7);G.stroke()}},
+    juice:{n:"glass of juice",r:10,draw:function(){vSh(vRect(-7,-24,14,24,3),"#ffae4a","#e08a2a",1,2);vGleam(-3,-16,1.5,5,"rgba(255,255,255,.7)")}},
+    vase:{n:"flower vase",r:12,draw:function(){[[-5,"#ff5fa2"],[0,"#ffd400"],[5,"#ffffff"]].forEach(function(f){G.strokeStyle="#3aa346";G.lineWidth=1.5;G.beginPath();G.moveTo(0,-16);G.lineTo(f[0],-30);G.stroke();vSh(vEll(f[0],-32,4,4),f[1],vDark(f[1]==="#ffffff"?"#eeeeee":f[1],.8),.5,1.5)});vSh(vRect(-7,-16,14,16,4),SAGE,SAGED,1,2)}}
+  };
+  var KPROPDEF=[["plantS",168,190],["plantT",258,190],["plantXS",262,252],["plates",472,118],["mugT",500,118],["mugS",518,118],["jarH",548,118],["jarR",568,118],["plantM",600,118],
+    ["eggs",480,186],["wheat",520,186],["jarG",546,186],["jarC",564,186],["jarP",582,186],["books",609,186],["jarH2",510,430],["jarR2",534,430],["plantL",578,292],["canister",602,292],["juice",707,KTY],["vase",819,KTY]];
+  var KPC={};function kPropPic(p,d){var key=p+"|"+kS.toFixed(3)+"|"+d;if(KPC[key])return KPC[key];var c=document.createElement("canvas"),u=Math.ceil(64*kS*d);c.width=u;c.height=u;var g=c.getContext("2d"),old=G;G=g;g.setTransform(kS*d,0,0,kS*d,32*kS*d,58*kS*d);KPROP[p].draw();G=old;KPC[key]=c;return c}
+  function kPropsInit(){var K2=st.kit;if(K2.propsInit)return;K2.propsInit=1;KPROPDEF.forEach(function(P){K2.items.push({id:K2.nid++,p:P[0],x:P[1],y:P[2]})})}
+  // ---- surfaces things can land on (highest first) ----
+  var KSURF=[{x0:452,x1:622,y:118},{x0:22,x1:132,y:120},{x0:452,x1:622,y:186},{x0:142,x1:284,y:190},{x0:318,x1:436,y:244},{x0:480,x1:542,y:247},{x0:134,x1:318,y:252},{x0:436,x1:460,y:252},
+    {x0:462,x1:620,y:292},{x0:656,x1:864,y:KTY},{x0:180,x1:288,y:420},{x0:144,x1:576,y:430},{x0:0,x1:KW,y:548}];
+  function kSurfBelow(x,y){for(var i=0;i<KSURF.length;i++){var S=KSURF[i];if(x>=S.x0&&x<=S.x1&&S.y>=y-2)return S}return KSURF[KSURF.length-1]}
+  // ---- picking up, carrying, dropping and throwing: things have weight ----
+  var kGhost=null,kFly=[],kFridgeOpen=false;
+  function kIsFood(t){return !t.p}
+  function kStartDrag(t,ev,from){var w=kWorld(ev);kDrag={t:t,from:from,cx:ev.clientX,cy:ev.clientY,x:w.x,y:w.y,hist:[[performance.now(),w.x,w.y]],tilt:0,vx:0};ks("lift");kGhostSync()}
+  function kInStage(cx,cy){var r=stg.getBoundingClientRect();return cx>=r.left&&cx<=r.right&&cy>=r.top&&cy<=r.bottom}
+  function kThingPic(t,px){if(t.p)return kPropPic(t.p,kDPR);return kPicOf(t,px)}
+  function kGhostSync(){var d=kDrag,inside=d&&kInStage(d.cx,d.cy);
+    if(d&&!inside){if(!kGhost){var px=d.t.d?64:48;if(d.t.legacy){kGhost=document.createElement("div");kGhost.innerHTML=icon(d.t.legacy)}else{var pic=kThingPic(d.t,px);kGhost=document.createElement("canvas");kGhost.width=pic.width;kGhost.height=pic.height;kGhost.getContext("2d").drawImage(pic,0,0)}
+        kGhost.className="kghost";kGhost.style.width=kGhost.style.height=((d.t.p?64:px)*kS)+"px";document.body.appendChild(kGhost)}kGhost.style.left=d.cx+"px";kGhost.style.top=d.cy+"px"}
+    else if(kGhost){kGhost.remove();kGhost=null}}
+  function kMoveDrag(ev){var d=kDrag;d.cx=ev.clientX;d.cy=ev.clientY;var w=kWorld(ev);d.x=w.x;d.y=w.y;var now=performance.now();d.hist.push([now,w.x,w.y]);while(d.hist.length>2&&now-d.hist[0][0]>100)d.hist.shift();kGhostSync()}
   function kEndGhost(){if(kGhost){kGhost.remove();kGhost=null}}
-  function kAddItem(t,x,y){var it={id:st.kit.nid++,x:x,y:y};if(t.d)it.d=t.d;else if(t.legacy)it.legacy=t.legacy;else{it.k=t.k;it.c=t.c||0;it.m=t.m||"raw"}st.kit.items.push(it);save();return it}
-  function kThingOf(it){return it.d?{d:it.d}:it.legacy?{legacy:it.legacy}:{k:it.k,c:it.c,m:it.m}}
-  function kFreeSpot(){var xs=[];for(var x=352;x<=556;x+=28)xs.push(x);for(var i=0;i<xs.length;i++){var ok=!st.kit.items.some(function(it){return Math.abs(it.x-xs[i])<20&&it.y===430});if(ok)return xs[i]}return 352+Math.random()*200}
-  function kPutOnIsland(t){var it=kAddItem(t,kFreeSpot(),430);kPuff(it.x,it.y-12,"#fff");return it}
-  function kDrop(t,w,from){var K2=st.kit;
-    if(inR(KZ.plate,w.x,w.y)){if(!kPlateAdd(t))kPutOnIsland(t);return}
-    if(Math.hypot(w.x-KZ.ver.x,w.y-KZ.ver.y)<KZ.ver.r){if(!kEat(t))kAddItem(t,688,KTY);return}
-    if(inR(KZ.pot,w.x,w.y)){if(!kStationAdd("pot",t))kPutOnIsland(t);return}
-    if(inR(KZ.pan,w.x,w.y)){if(!kStationAdd("pan",t))kPutOnIsland(t);return}
-    if(inR(KZ.oven,w.x,w.y)){if(!kStationAdd("oven",t))kPutOnIsland(t);return}
-    if(inR(KZ.bin,w.x,w.y)){ks("compost");kPuff(620,470,"#7fd36b");sTip("Into the compost! It will help the farm grow.");return}
-    if(inR(KZ.fridge,w.x,w.y)){if((t.legacy)||(!t.d&&!t.c&&(!t.m||t.m==="raw"))){kToFridge(t);ss("door");sTip("Back in the fridge.");return}hs("buzz");sTip("Only fresh food goes back in the fridge.",true);kPutOnIsland(t);return}
-    if(t.legacy){kToFridge(t);sTip("Feed that one straight to Verity!");return}
-    if(inR(KZ.board,w.x,w.y)){if(t.d){sTip("Dishes go on the plate, not the cutting board.");kPutOnIsland(t);return}var it=kAddItem(t,Math.max(192,Math.min(266,w.x)),420);ks("plop");sTip(KF[t.k]&&KF[t.k].chop?"Swipe the knife across it to chop!":"Hmm, you can't chop "+kName(t.k).toLowerCase()+".");return}
-    var best=null,bs=1e9;KSURF.forEach(function(S){if(w.x<S.x0||w.x>S.x1)return;var sc=w.y<=S.y+24?S.y-w.y:1000+w.y-S.y;if(sc<bs){bs=sc;best=S}});
-    if(best){kAddItem(t,w.x,best.y);ks("plop");return}
-    if(from==="fridge"){kToFridge(t);return}kPutOnIsland(t)}
+  function kVel(h){if(h.length<2||performance.now()-h[h.length-1][0]>70)return {x:0,y:0};var a=h[0],b=h[h.length-1],dt=(b[0]-a[0])/1000;if(dt<.012)return {x:0,y:0};return {x:(b[1]-a[1])/dt,y:(b[2]-a[2])/dt}}
+  function kAddItem(t,x,y){var it={id:st.kit.nid++,x:x,y:y};if(t.p)it.p=t.p;else if(t.d)it.d=t.d;else if(t.legacy)it.legacy=t.legacy;else{it.k=t.k;it.c=t.c||0;it.m=t.m||"raw"}st.kit.items.push(it);save();return it}
+  function kThingOf(it){return it.p?{p:it.p}:it.d?{d:it.d}:it.legacy?{legacy:it.legacy}:{k:it.k,c:it.c,m:it.m}}
+  function kFreeSpot(){var xs=[];for(var x=352;x<=500;x+=26)xs.push(x);for(var i=0;i<xs.length;i++){var ok=!st.kit.items.some(function(it){return Math.abs(it.x-xs[i])<18&&it.y===430});if(ok)return xs[i]}return 352+Math.random()*140}
+  function kDropIn(t,x,y,vx){kFly.push({t:t,x:x,y:y,vx:vx||0,vy:-60,rot:0,vr:(vx||0)*.004,life:0})}
+  function kPutOnIsland(t){kDropIn(t,kFreeSpot(),360,0)}
+  function kRelease(d){var t=d.t,v=kVel(d.hist),sp=Math.hypot(v.x,v.y);if(sp>1500){v.x*=1500/sp;v.y*=1500/sp;sp=1500}
+    if(sp<650&&kDirect(t,{x:d.x,y:d.y}))return;
+    kFly.push({t:t,x:d.x,y:d.y+kBase(t)-12,vx:v.x*.85,vy:Math.min(v.y*.85,900),rot:d.tilt||0,vr:v.x*.005,life:0})}
+  // gently put right onto something that takes it
+  function kDirect(t,w){var food=kIsFood(t);
+    if(inR(KZ.plate,w.x,w.y)&&food)return kPlateAdd(t);
+    if(Math.hypot(w.x-KZ.ver.x,w.y-KZ.ver.y)<KZ.ver.r){if(!food){kNotFood(t);return false}return kEat(t)}
+    if(inR(KZ.pot,w.x,w.y)&&food)return kStationAdd("pot",t);
+    if(inR(KZ.pan,w.x,w.y)&&food)return kStationAdd("pan",t);
+    if(inR(KZ.oven,w.x,w.y)&&food)return kStationAdd("oven",t);
+    if(inR(KZ.bin,w.x,w.y)){if(!food){sTip("Let's keep the "+KPROP[t.p].n+"! Only food goes in the compost.");return false}kCompost();return true}
+    if(inR(KZ.fridge,w.x,w.y))return kBackToFridge(t);
+    if(t.legacy){kToFridge(t);sTip("Feed that one straight to Verity!");return true}
+    return false}
+  function kNotFood(t){svX(kVer,"surprised","r-startle");ks("boing");sTip("That's a "+KPROP[t.p].n+", not food, silly!");setTimeout(function(){svX(kVer,null)},900)}
+  function kCompost(){ks("compost");kPuff(620,468,"#7fd36b");sTip("Into the compost! It will help the farm grow.")}
+  function kBackToFridge(t){if(t.legacy||(kIsFood(t)&&!t.d&&!t.c&&(!t.m||t.m==="raw"))){kToFridge(t);ss("door");sTip("Back in the fridge.");return true}if(kIsFood(t)){hs("buzz");sTip("Only fresh food goes back in the fridge.",true)}return false}
+  // flying things: gravity, bounces, and landing in things on the way down
+  function kFlyStep(F,dt){var ox=F.x,oy=F.y;F.vy+=1500*dt;F.x+=F.vx*dt;F.y+=F.vy*dt;F.rot+=F.vr*dt;F.life+=dt;
+    if(F.x<14){F.x=14;F.vx=Math.abs(F.vx)*.4}if(F.x>KW-14){F.x=KW-14;F.vx=-Math.abs(F.vx)*.4}
+    if(F.vy<=0)return false;var food=kIsFood(F.t);
+    function crossed(y,x0,x1){return oy<=y&&F.y>=y&&F.x>=x0&&F.x<=x1}
+    function bounce(cx){F.vy=-Math.max(240,F.vy*.45);F.vx=(F.x<(cx||F.x+1)?-1:1)*(140+Math.random()*60);F.b2=1;ks("boing")}
+    if(!F.hitV&&Math.hypot(F.x-760,F.y-280)<30){F.hitV=1;if(!food){kNotFood(F.t);bounce(760);return false}if(kEat(F.t))return true;bounce(760);return false}
+    if(crossed(208,326,370)){if(food&&kStationAdd("pot",F.t))return true;bounce(348);return false}
+    if(crossed(236,386,430)){if(food&&kStationAdd("pan",F.t))return true;bounce(408);return false}
+    if(food&&crossed(KTY-6,730,790)&&kPlateAdd(F.t,true))return true;
+    if(crossed(466,600,640)){if(food){kCompost();return true}bounce(620);return false}
+    if(kFridgeOpen&&food&&F.x>36&&F.x<118&&F.y>186&&F.y<392&&kBackToFridge(F.t))return true;
+    for(var i=0;i<KSURF.length;i++){var S=KSURF[i];if(!crossed(S.y,S.x0,S.x1))continue;
+      if(F.vy>430&&!F.b2){F.y=S.y;F.vy=-F.vy*.3;F.vx*=.55;F.vr*=-.5;F.b2=(F.b2||0)+1;ks("thud");kDust(F.x,S.y);return false}
+      var it=kAddItem(F.t,F.x,S.y);it._sq=.25;ks(F.t.p?"clink":"thud");if(S.y===420&&food&&KF[F.t.k])sTip(KF[F.t.k].chop?"Swipe the knife across it to chop!":"Hmm, you can't chop "+kName(F.t.k).toLowerCase()+".");return true}
+    if(F.life>5){kAddItem(F.t,F.x,548);return true}
+    return false}
+  function kDust(x,y){for(var i=0;i<4;i++)kParts.push({x:x,y:y,vx:(Math.random()-.5)*60,vy:-10-Math.random()*20,life:.35,max:.35,col:"rgba(255,255,255,.8)"})}
+  // ---- the fridge opens ----
+  function kFridgeFoods(){var order=FORD.concat(["egg","milk","goatmilk","honey","apple","orange","truffle"]);return order.filter(function(k){return st.fridge[k]>0&&KF[k]}).slice(0,12)}
+  function kFridgeSlot(i){return {x:50+(i%3)*28,y:228+Math.floor(i/3)*48}}
+  function kFridgeHit(w){if(!kFridgeOpen)return null;var L=kFridgeFoods();for(var i=0;i<L.length;i++){var p=kFridgeSlot(i);if(Math.hypot(w.x-p.x,w.y-(p.y-11))<14)return L[i]}return null}
     // ---- stations ----
   var KCAP={pot:4,pan:3,oven:3};
   function kStationAdd(s,t){var P=st.kit[s];
@@ -3518,7 +3571,7 @@ const lt=G.createRadialGradient(KW*.45,KH*.35,40,KW*.45,KH*.45,KW*.75);lt.addCol
   // ---- plate ----
   function kPlateDish(){var P=st.kit.plate;if(P.d)return P.d;if(!P.items.length)return null;if(P.items.length>=2||kMatch("plate",P.items))return kDish("plate",P.items,false);return null}
   function kPlateThing(){var P=st.kit.plate,D=kPlateDish();if(D)return {d:D};if(P.items.length===1){var i=P.items[0];return i.legacy?{legacy:i.legacy}:{k:i.k,c:i.c,m:i.m}}return null}
-  function kPlateAdd(t,quiet){var P=st.kit.plate;
+  function kPlateAdd(t,quiet){var P=st.kit.plate;if(t.p||(t.k&&NOFOOD[t.k])){if(!quiet){hs("buzz");sTip("That doesn't go on Verity's plate!",true)}return false}
     if(P.d||(t.d&&P.items.length)||(t.legacy&&P.items.length)){if(!quiet){hs("buzz");sTip("The plate is full! Feed Verity first.",true)}return false}
     if(t.d){P.d=t.d;ks("plop");save();sTip("Tap Verity to feed her!");return true}
     if(t.legacy){P.items=[{legacy:t.legacy}];ks("plop");save();return true}
@@ -3550,9 +3603,10 @@ const lt=G.createRadialGradient(KW*.45,KH*.35,40,KW*.45,KH*.45,KW*.75);lt.addCol
   function kSplash(x,y){for(var i=0;i<8;i++)kParts.push({x:x+(Math.random()-.5)*30,y:y,vx:(Math.random()-.5)*50,vy:-60-Math.random()*40,g:300,life:.5,max:.5,col:"#9fd3ff"})}
   function kChopBits(x,y,col){for(var i=0;i<6;i++)kParts.push({x:x,y:y,vx:(Math.random()-.5)*110,vy:-50-Math.random()*50,g:320,life:.5,max:.5,col:col||"#fff"})}
   // ---- touch ----
-  function kHitItem(w){var L=st.kit.items;for(var i=L.length-1;i>=0;i--){var it=L[i],r=it.d?24:17,cy=it.y-(it.d?16:13);if(Math.hypot(w.x-it.x,w.y-cy)<r)return i}return -1}
+  function kHitItem(w){var L=st.kit.items,best=-1,by=-1e9;for(var i=0;i<L.length;i++){var it=L[i],r=it.p?KPROP[it.p].r+3:it.d?24:17,cy=it.y-(it.p?KPROP[it.p].r*.9:it.d?16:13);if(Math.hypot(w.x-it.x,w.y-cy)<r&&it.y>by){by=it.y;best=i}}return best}
   stg.addEventListener("pointerdown",function(ev){if(where!=="kitchen"||!kWrap)return;ev.preventDefault();var w=kWorld(ev),K2=st.kit;
     if(Math.hypot(w.x-KKNIFE.x,w.y-KKNIFE.y)<20&&kHitItem(w)<0){kGest={type:"knife"};kKnife={x:w.x,y:w.y,hit:{}};return}
+    var fk=kFridgeHit(w);if(fk){var tf=kTakeFromFridge(fk);if(tf){kStartDrag(tf,ev,"fridge")}return}
     var hi=kHitItem(w);if(hi>=0){kGest={type:"item",i:hi,x:ev.clientX,y:ev.clientY,id:K2.items[hi].id};return}
     if(inR(KZ.plate,w.x,w.y)&&kPlateThing()){kGest={type:"plate",x:ev.clientX,y:ev.clientY};return}
     if(Math.hypot(w.x-KZ.ver.x,w.y-KZ.ver.y)<KZ.ver.r){kGest={type:"ver"};return}
@@ -3561,11 +3615,11 @@ const lt=G.createRadialGradient(KW*.45,KH*.35,40,KW*.45,KH*.45,KW*.75);lt.addCol
     if(inR(KZ.oven,w.x,w.y)){if(K2.oven.items.length){kGest={type:"oven",x:ev.clientX,y:ev.clientY};return}ks("door");K2.oven.open=1;sTip("Drop food in the oven to bake it!");return}
     if(inR(KZ.board,w.x,w.y)){kGest={type:"knife"};kKnife={x:w.x,y:w.y,hit:{},swipe:1};return}
     if(Math.hypot(w.x-KZ.ver.x,w.y-KZ.ver.y)<KZ.ver.r){kGest={type:"ver"};return}
-    if(inR(KZ.fridge,w.x,w.y)){ss("door");var fr=document.getElementById("kfr");if(fr){fr.classList.remove("flash");void fr.offsetWidth;fr.classList.add("flash")}sTip("Your fridge is down below. Drag food up from it!");return}
+    if(inR(KZ.fridge,w.x,w.y)||(kFridgeOpen&&w.x>=128&&w.x<=168&&w.y>=182&&w.y<=396)){kFridgeOpen=!kFridgeOpen;ss("door");sTip(kFridgeOpen?(kFridgeFoods().length?"Drag food out of the fridge!":"The fridge is empty! Grow food on the farm."):"Fridge closed.");return}
     kGest={type:"view",x:ev.clientX,ox:kOX}});
   window.addEventListener("pointermove",function(ev){if(where!=="kitchen")return;
-    if(kTrayG&&!kDrag&&ev.pointerId===kTrayG.id){var dy=ev.clientY-kTrayG.y,dx=ev.clientX-kTrayG.x;if(dy<-10&&Math.abs(dy)>Math.abs(dx)*.8){var t=kTakeFromFridge(kTrayG.k);if(t)kStartDrag(t,ev,"fridge");kTrayG=null}else if(Math.abs(dx)>14)kTrayG=null;return}
-    if(kDrag){kMoveGhost(ev);return}
+    if(kTrayG&&!kDrag&&ev.pointerId===kTrayG.id){var dy=ev.clientY-kTrayG.y,dx=ev.clientX-kTrayG.x;if(dy<-10&&Math.abs(dy)>Math.abs(dx)*.8){var t=kTakeFromFridge(kTrayG.k);if(t){kFridgeOpen=true;kStartDrag(t,ev,"fridge")}kTrayG=null}else if(Math.abs(dx)>14)kTrayG=null;return}
+    if(kDrag){kMoveDrag(ev);return}
     var g=kGest;if(!g)return;var w=kWorld(ev),K2=st.kit,moved=g.x!==undefined?Math.hypot(ev.clientX-g.x,ev.clientY-g.y):0;
     if(g.type==="knife"){kKnife.x=w.x;kKnife.y=w.y;kKnifeCut(w);return}
     if(g.type==="item"&&moved>8){var idx=K2.items.findIndex(function(it){return it.id===g.id});if(idx<0){kGest=null;return}var it=K2.items.splice(idx,1)[0];save();kStartDrag(kThingOf(it),ev,"counter");kGest=null;return}
@@ -3579,18 +3633,18 @@ const lt=G.createRadialGradient(KW*.45,KH*.35,40,KW*.45,KH*.45,KW*.75);lt.addCol
     if(g.type==="view"){kPanTo(g.ox+ev.clientX-g.x)}});
   function kUp(ev){if(where!=="kitchen")return;
     if(kTrayG&&ev.pointerId===kTrayG.id){var k=kTrayG.k;kTrayG=null;if(!kDrag){var t0=kTakeFromFridge(k);if(t0){kPutOnIsland(t0);ks("plop");sTip("Drag it to the cutting board, a pot, the pan or the oven!")}}}
-    if(kDrag){var d=kDrag;kDrag=null;kEndGhost();var r=stg.getBoundingClientRect();
-      if(d.cx>=r.left&&d.cx<=r.right&&d.cy>=r.top&&d.cy<=r.bottom)kDrop(d.t,kWorld({clientX:d.cx,clientY:d.cy}),d.from);
-      else if(d.from==="fridge"&&!d.t.d&&!d.t.c&&(!d.t.m||d.t.m==="raw"))kToFridge(d.t);else kPutOnIsland(d.t);return}
+    if(kDrag){var d=kDrag;kDrag=null;kEndGhost();
+      if(kInStage(d.cx,d.cy)){kRelease(d)}
+      else if(!kBackToFridge(d.t))kPutOnIsland(d.t);return}
     var g=kGest;kGest=null;if(!g)return;var K2=st.kit;
     if(g.type==="knife"){kKnife=null;return}
-    if(g.type==="item"){var it=K2.items.find(function(x){return x.id===g.id});if(it){var tt=kThingOf(it);sTip(it.d?it.d.name+"! Drag it to Verity or her plate.":"A "+kThingName(tt)+". Drag it somewhere to cook it.")}return}
+    if(g.type==="item"){var it=K2.items.find(function(x){return x.id===g.id});if(it&&it.p){it._sq=.25;ks("clink");sTip("A "+KPROP[it.p].n+". Move it anywhere you like!");return}if(it){var tt=kThingOf(it);sTip(it.d?it.d.name+"! Drag it to Verity or her plate.":"A "+kThingName(tt)+". Drag it somewhere to cook it.")}return}
     if(g.type==="plate"||g.type==="ver"){var th=kPlateThing();if(th&&!kBusy){if(kEat(th))kPlateClear()}else if(!th){svX(kVer,"happy","r-hop");setTimeout(function(){svX(kVer,null)},900);sTip("Verity is hungry! Make her something yummy.")}return}
     if(g.type==="pot"){var r1=K2.pot.res;K2.pot.res=null;K2.pot.done=0;save();if(r1)kPutOnIsland(r1);return}
     if(g.type==="pan"){if(K2.pan.t>=5){var r2=kStationTake("pan");if(r2)kPutOnIsland(r2)}else sTip("Still cooking. Watch it turn golden!");return}
     if(g.type==="oven"){if(K2.oven.t>=6){ks("door");K2.oven.open=1;var r3=kStationTake("oven");if(r3)kPutOnIsland(r3)}else sTip("Still baking. Wait for the ding!");return}}
   window.addEventListener("pointerup",kUp);window.addEventListener("pointercancel",kUp);
-  function kKnifeCut(w){var L=st.kit.items;L.forEach(function(it){if(it.d||it.legacy||it.y!==420)return;var inside=Math.hypot(w.x-it.x,w.y-(it.y-12))<18,was=kKnife.hit[it.id];kKnife.hit[it.id]=inside;if(!inside||was)return;
+  function kKnifeCut(w){var L=st.kit.items;L.forEach(function(it){if(it.d||it.legacy||it.p||it.y!==420)return;var inside=Math.hypot(w.x-it.x,w.y-(it.y-12))<18,was=kKnife.hit[it.id];kKnife.hit[it.id]=inside;if(!inside||was)return;
       var F=KF[it.k];if(!F||!F.chop){if(!kKnife.hit["no"+it.id]){kKnife.hit["no"+it.id]=1;ks("boing");sTip("You can't chop "+kName(it.k).toLowerCase()+"!")}return}
       if(it.c){ks("chop");return}it.ch=(it.ch||0)+1;ks(F.crack?"crack":"chop");kChopBits(it.x,it.y-12,F.col);
       if(F.crack||it.ch>=3){it.c=1;delete it.ch;save();sTip(F.crack?"Cracked!":"Chopped! Now cook it, or put it on the plate.")}})}
@@ -3606,7 +3660,23 @@ const lt=G.createRadialGradient(KW*.45,KH*.35,40,KW*.45,KH*.45,KW*.75);lt.addCol
     if(K2.pot.done&&Math.random()<dt*3)kParts.push({x:338+Math.random()*20,y:200,vx:0,vy:-24,life:1.2,max:1.2,steam:1});
     kSaveT-=dt;if(kSaveT<=0){kSaveT=2;if(pn.items.length||ov.items.length)save()}
     if(kDrag){var r=stg.getBoundingClientRect();if(kDrag.cx<r.left+40)kPanTo(kOX+300*dt);else if(kDrag.cx>r.right-40)kPanTo(kOX-300*dt)}
+    for(var f=kFly.length-1;f>=0;f--){if(kFlyStep(kFly[f],dt))kFly.splice(f,1)}
+    if(kDrag){var v=kVel(kDrag.hist),tl=Math.max(-.6,Math.min(.6,v.x/1100));kDrag.tilt+=(tl-kDrag.tilt)*Math.min(1,dt*9)}
+    K2.items.forEach(function(it){if(it._sq>0){it._sq-=dt;if(it._sq<=0)delete it._sq}});
     for(var i=kParts.length-1;i>=0;i--){var P=kParts[i];P.life-=dt;if(P.life<=0){kParts.splice(i,1);continue}P.x+=P.vx*dt;P.y+=P.vy*dt;if(P.g)P.vy+=P.g*dt}}
+  function kBase(t){return t.p?16:t.d?24:13}
+  function kDrawThing(t,x,y,sc,rot,sq){if(t.legacy)return;G.save();G.translate(x,y);if(rot)G.rotate(rot);G.scale(sc*(1+sq*.6),sc*(1-sq));
+    if(t.p){G.drawImage(kPropPic(t.p,kDPR),-32,-58,64,64)}else if(t.d){G.drawImage(dishPic(t.d,52,kDPR),-26,-40,52,52)}else{var pic=kPicOf(t,32);if(pic)G.drawImage(pic,-16,-29,32,32)}G.restore()}
+  function kDrawKnife(x,y,a){G.save();G.translate(x,y);G.rotate(a);vSh(vPoly([[-5,0],[46,-3],[52,5],[-5,6]]),"#e8ecf2","#b8bfcc",1.5,2);vSh(vRect(-26,-1,22,9,4),WOODD,"#5a381a",1,2);G.restore()}
+  function kDrawFridge(){var x=26,y=176,w=102,h=226;
+    vSh(vPoly([[128,180],[170,194],[170,384],[128,398]]),CREAM,CREAMD,2,2.5);vSh(vRect(160,248,5,46,2),"#c8ccd6","#9aa3b5",1,1.5);
+    [[146,246],[146,300],[146,354]].forEach(function(p){vSh(vPoly([[132,p[1]],[166,p[1]+6],[166,p[1]+16],[132,p[1]+10]]),"#e8f6f2","#bfd9d2",1,1.5)});
+    G.save();vRect(x+10,y+10,w-20,h-20,8)();var ig=G.createLinearGradient(0,y,0,y+h);ig.addColorStop(0,"#f4fdff");ig.addColorStop(1,"#c4e8f4");G.fillStyle=ig;G.fill();G.clip();G.fillStyle="rgba(255,255,220,.75)";G.beginPath();G.ellipse(x+w/2,y+18,34,9,0,0,7);G.fill();G.restore();
+    vOl(2.5);vRect(x+10,y+10,w-20,h-20,8)();G.stroke();
+    [230,278,326].forEach(function(sy){G.fillStyle="rgba(255,255,255,.85)";G.fillRect(x+10,sy,w-20,5);vOl(1.6);G.strokeRect(x+10,sy,w-20,5)});
+    var L=kFridgeFoods();L.forEach(function(k,i){var p=kFridgeSlot(i);kFood({k:k,c:0,m:"raw"},p.x,p.y-11,24,0);
+      G.fillStyle="#ffd400";G.beginPath();G.arc(p.x+9,p.y-21,6.5,0,7);G.fill();vOl(1.5);G.stroke();G.fillStyle=K;G.font="bold 8px system-ui";G.textAlign="center";G.textBaseline="middle";G.fillText(st.fridge[k],p.x+9,p.y-20.5)});
+    if(!L.length){G.fillStyle="#7a9aa6";G.font="bold 10px system-ui";G.textAlign="center";G.fillText("Empty!",x+w/2,y+h/2)}}
   function kFood(t,x,y,px,rot){var pic=kPicOf(t,px);if(!pic)return;G.save();G.translate(x,y);if(rot)G.rotate(rot);G.drawImage(pic,-px/2,-px/2,px,px);G.restore()}
   function kDraw(time){var K2=st.kit,g=kfx;g.setTransform(1,0,0,1,0,0);g.clearRect(0,0,kFg.width,kFg.height);g.setTransform(kS*kDPR,0,0,kS*kDPR,0,kTop*kS*kDPR);var old=G;G=g;
     // burner flames
@@ -3634,10 +3704,18 @@ const lt=G.createRadialGradient(KW*.45,KH*.35,40,KW*.45,KH*.45,KW*.75);lt.addCol
     // plate on the table
     vShadow(760,KTY,30);vSh(vEll(760,KTY-2,32,6),"#ffffff","#d6dbe6",1.5,2.5);
     var pl=K2.plate,pd=kPlateDish();if(pd){var dp=dishPic(pd,62,kDPR);G.drawImage(dp,760-31,KTY-2-36,62,62)}else pl.items.forEach(function(it,i){if(it.legacy)return;kFood(it,744+i*12,KTY-12,24,0)});
-    // food on the counters
-    K2.items.forEach(function(it){var t=kThingOf(it);if(it.legacy){return}if(it.d){var dp2=dishPic(it.d,52,kDPR);G.drawImage(dp2,it.x-26,it.y-40,52,52)}else{var wob=it.ch?Math.sin(time*40)*1:0;kFood(t,it.x+wob,it.y-13,32,0);if(it.ch){G.strokeStyle="rgba(255,255,255,.9)";G.lineWidth=1.5;for(var c=0;c<it.ch;c++){G.beginPath();G.moveTo(it.x-8+c*7,it.y-24);G.lineTo(it.x-4+c*7,it.y-4);G.stroke()}}}});
-    // knife
-    var kn=kKnife||{x:KKNIFE.x,y:KKNIFE.y};G.save();G.translate(kn.x,kn.y);G.rotate(kKnife?-.9:-.3);vSh(vPoly([[-5,0],[46,-3],[52,5],[-5,6]]),"#e8ecf2","#b8bfcc",1.5,2);vSh(vRect(-26,-1,22,9,4),WOODD,"#5a381a",1,2);G.restore();
+    // open fridge
+    if(kFridgeOpen)kDrawFridge();
+    // knife at rest
+    if(!kKnife)kDrawKnife(KKNIFE.x,KKNIFE.y,-.3);
+    // everything sitting around the kitchen, back to front
+    K2.items.slice().sort(function(a,b){return a.y-b.y}).forEach(function(it){if(it.legacy)return;var sq=it._sq>0?Math.sin(it._sq/.25*Math.PI)*.2:0,wob=it.ch?Math.sin(time*40):0;kDrawThing(kThingOf(it),it.x+wob,it.y,1,0,sq);
+      if(it.ch){G.strokeStyle="rgba(255,255,255,.9)";G.lineWidth=1.5;for(var c=0;c<it.ch;c++){G.beginPath();G.moveTo(it.x-8+c*7,it.y-24);G.lineTo(it.x-4+c*7,it.y-4);G.stroke()}}});
+    kFly.forEach(function(F){kDrawThing(F.t,F.x,F.y,1,F.rot,0)});
+    if(kKnife)kDrawKnife(kKnife.x,kKnife.y,-.9);
+    // the thing you're carrying: lifted, tilting, with a shadow where it will land
+    if(kDrag&&kInStage(kDrag.cx,kDrag.cy)){var d=kDrag,by=d.y+kBase(d.t),S=kSurfBelow(d.x,by-12),gap=Math.max(0,S.y-by);G.fillStyle="rgba(40,20,10,"+Math.max(.08,.3-gap/600)+")";G.beginPath();G.ellipse(d.x,S.y,Math.max(6,16-gap/30),Math.max(2,4-gap/120),0,0,7);G.fill();
+      kDrawThing(d.t,d.x,by,1.12,d.tilt,0)}
     // floating bits
     kParts.forEach(function(Q){var a=Math.min(1,Q.life/Q.max*1.5);G.globalAlpha=a;
       if(Q.ch){G.font="400 "+(Q.ch==="♥"?18:14)+"px 'Lilita One',system-ui";G.textAlign="center";G.textBaseline="middle";G.lineWidth=3;G.strokeStyle="rgba(29,18,48,.7)";G.strokeText(Q.ch,Q.x,Q.y);G.fillStyle=Q.col;G.fillText(Q.ch,Q.x,Q.y)}
@@ -3661,7 +3739,7 @@ const lt=G.createRadialGradient(KW*.45,KH*.35,40,KW*.45,KH*.45,KW*.75);lt.addCol
     bk.innerHTML='<div class="book-in"><h3>Discovery Book</h3><p>'+found+' of '+tot+' recipes found. The pictures show what goes in. A chopped picture means chop it first!</p>'+body+'<button class="big close" type="button">Close</button></div>';
     stg.appendChild(bk);sfx("pop");bk.addEventListener("click",function(e){if(e.target.closest(".close")||e.target===bk){bk.remove();sfx("pop")}})});
   window.__openScene=function(w){openScene(w)};
-  window.__kit={match:function(a,i){return kMatch(a,i)},dish:function(a,i,b){return kDish(a,i,b)},recipes:function(){return KREC},state:function(){return st.kit},world:function(x,y){return kScreen(x,y)},book:function(){return st.kbook},fun:function(){return st.kfun}};
+  window.__kit={fly:function(){return kFly.length},fridgeOpen:function(){return kFridgeOpen},match:function(a,i){return kMatch(a,i)},dish:function(a,i,b){return kDish(a,i,b)},recipes:function(){return KREC},state:function(){return st.kit},world:function(x,y){return kScreen(x,y)},book:function(){return st.kbook},fun:function(){return st.kfun}};
 
   document.getElementById("toGarden").addEventListener("click",function(){sfx("pop");openScene("garden")});
   document.getElementById("toKitchen").addEventListener("click",function(){
